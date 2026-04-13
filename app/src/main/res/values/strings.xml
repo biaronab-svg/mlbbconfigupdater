@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Hero Config Manager</string>
+    <string name="nav_heroes">Heroes</string>
+    <string name="nav_config">Config</string>
+    <string name="add_hero">Add Hero</string>
+    <string name="add_skin">Add Skin</string>
+    <string name="add_upgrade_skin">Add Upgrade Skin</string>
+    <string name="edit_hero">Edit Hero</string>
+    <string name="delete_hero">Delete Hero</string>
+    <string name="edit_skin">Edit Skin</string>
+    <string name="delete_skin">Delete Skin</string>
+    <string name="no_heroes">No heroes here yet</string>
+    <string name="no_heroes_sub">Tap the + button to add your first hero</string>
+    <string name="hero_name">Hero Name</string>
+    <string name="hero_title">Hero Title</string>
+    <string name="hero_type">Hero Type (e.g. Marksman)</string>
+    <string name="hero_logo_url">Hero Logo URL</string>
+    <string name="hero_splash_url">Hero Splash URL</string>
+    <string name="restore_url">Restore URL</string>
+    <string name="skin_title">Skin Title</string>
+    <string name="skin_type">Skin Type (e.g. Epic)</string>
+    <string name="skin_logo_url">Skin Logo URL</string>
+    <string name="zip_url">ZIP URL</string>
+    <string name="save_hero_local">Save Hero Editor</string>
+    <string name="config_metadata">Configuration Metadata</string>
+    <string name="config_metadata_sub">Changes here will push directly to GitHub</string>
+    <string name="config_version">Config Version (e.g. 1.0.0)</string>
+    <string name="config_note">Version Note / Changelog</string>
+    <string name="push_to_github">Save and Push to GitHub</string>
+    <string name="hero_distribution">Hero Distribution</string>
+    <string name="hero_splash_desc">Hero splash image</string>
+    <string name="hero_logo_desc">Hero logo</string>
+    <string name="skin_logo_desc">Skin logo</string>
+    <string name="action_refresh">Refresh from GitHub</string>
+</resources>

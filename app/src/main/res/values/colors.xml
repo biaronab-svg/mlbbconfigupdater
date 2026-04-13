@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Launcher -->
+    <color name="ic_launcher_background">#0A0A0F</color>
+
+    <!-- Brand -->
+    <color name="primary">#7C4DFF</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="primary_container">#311B92</color>
+    <color name="on_primary_container">#D1C4E9</color>
+
+    <!-- Surface -->
+    <color name="surface">#0F0F13</color>
+    <color name="surface_variant">#1E1E2A</color>
+    <color name="on_surface">#F1F1F3</color>
+    <color name="on_surface_variant">#9494A8</color>
+    <color name="outline_variant">#2E2E3A</color>
+    <color name="background">#0A0A0F</color>
+
+    <!-- Semantic -->
+    <color name="error">#F87171</color>
+    <color name="success">#34D399</color>
+    <color name="warning">#FBBF24</color>
+</resources>

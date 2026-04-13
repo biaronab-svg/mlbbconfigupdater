@@ -1,0 +1,29 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build, Install & Launch Debug",
+            "type": "shell",
+            // The pure command without the cmd /c wrapper
+            "command": "gradlew.bat installDebug && adb shell monkey -p com.heroconfigmanager -c android.intent.category.LAUNCHER 1",
+            "options": {
+                // This forces VS Code to use Command Prompt instead of PowerShell for this task
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": ["/d", "/c"]
+                }
+            },
+             
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}

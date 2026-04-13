@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/heroesFragment">
+
+    <fragment
+        android:id="@+id/heroesFragment"
+        android:name="com.heroconfigmanager.ui.heroes.HeroesFragment"
+        android:label="Heroes" />
+
+    <fragment
+        android:id="@+id/configFragment"
+        android:name="com.heroconfigmanager.ui.config.ConfigFragment"
+        android:label="Config" />
+
+</navigation>

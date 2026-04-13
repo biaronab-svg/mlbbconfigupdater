@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:strokeWidth="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical">
+
+        <!-- Drag handle -->
+        <ImageView
+            android:id="@+id/imgDragHandle"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_drag_handle"
+            android:alpha="0.6"
+            android:contentDescription="Drag to reorder"
+            android:layout_marginEnd="12dp"
+            android:padding="4dp" />
+
+        <!-- Rounded skin logo -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imgSkinLogo"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/skin_logo_desc"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.RoundedImage" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="16dp">
+
+            <TextView
+                android:id="@+id/tvSkinTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipSkinType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.Chip.Suggestion"
+                android:layout_marginTop="6dp"
+                android:textSize="12sp"
+                android:clickable="false"
+                android:focusable="false"
+                app:chipMinHeight="28dp"
+                app:chipBackgroundColor="?attr/colorSurfaceVariant"
+                app:chipStrokeWidth="0dp"
+                app:chipCornerRadius="14dp" />
+
+        </LinearLayout>
+
+        <!-- Actions -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnEditSkin"
+            style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:contentDescription="@string/edit_skin"
+            app:icon="@drawable/ic_edit"
+            app:iconSize="20dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDeleteSkin"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@string/delete_skin"
+            app:icon="@drawable/ic_delete"
+            app:iconTint="?attr/colorError"
+            app:iconSize="20dp" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
