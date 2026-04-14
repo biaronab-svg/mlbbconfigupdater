@@ -8,12 +8,12 @@ import com.heroconfigmanager.data.remote.GitHubUpdateRequest
 import com.heroconfigmanager.data.remote.NetworkClient
 
 object ConfigRepository {
-
+        
     // GitHub repo coordinates — match the web app
     private const val OWNER      = "biaronab-svg"
     private const val REPO       = "mlbb-biar"
     private const val FILE_PATH  = "config.json"
-    private const val AUTH_TOKEN = "Bearer YOUR_GITHUB_PAT_HERE"
+    private val AUTH_TOKEN = "Bearer ${com.heroconfigmanager.BuildConfig.GITHUB_TOKEN}"
 
     private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
     private val api = NetworkClient.gitHubApiService

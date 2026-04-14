@@ -11,7 +11,7 @@
     <string name="edit_skin">Edit Skin</string>
     <string name="delete_skin">Delete Skin</string>
     <string name="no_heroes">No heroes here yet</string>
-    <string name="no_heroes_sub">Tap the + button to add your first hero</string>
+    <string name="no_heroes_sub">Tap the + button below to add\nyour first hero to this role</string>
     <string name="hero_name">Hero Name</string>
     <string name="hero_title">Hero Title</string>
     <string name="hero_type">Hero Type (e.g. Marksman)</string>
@@ -33,4 +33,11 @@
     <string name="hero_logo_desc">Hero logo</string>
     <string name="skin_logo_desc">Skin logo</string>
     <string name="action_refresh">Refresh from GitHub</string>
+    <string name="empty_heroes_emoji">🛡️</string>
+    <string name="skins_count_format">%d Skins</string>
+    <string name="upgrades_count_format">%d Upgrades</string>
+    <string name="sources_count_format">%d sources</string>
+    <string name="hero_count_singular">%d hero</string>
+    <string name="hero_count_plural">%d heroes</string>
+    <string name="drag_to_reorder">Drag to reorder</string>
 </resources>

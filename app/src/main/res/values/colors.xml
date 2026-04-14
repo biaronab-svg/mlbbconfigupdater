@@ -17,8 +17,36 @@
     <color name="outline_variant">#2E2E3A</color>
     <color name="background">#0A0A0F</color>
 
+    <!-- Elevated card surface (slightly lighter for layered depth) -->
+    <color name="card_surface">#161620</color>
+    <color name="card_surface_elevated">#1C1C28</color>
+
     <!-- Semantic -->
     <color name="error">#F87171</color>
     <color name="success">#34D399</color>
     <color name="warning">#FBBF24</color>
+
+    <!-- ── Per-role accent colors ────────────────────────────── -->
+    <color name="role_marksman">#F59E0B</color>   <!-- Amber -->
+    <color name="role_fighter">#EF4444</color>     <!-- Red -->
+    <color name="role_assassin">#8B5CF6</color>    <!-- Purple -->
+    <color name="role_tank">#3B82F6</color>        <!-- Blue -->
+    <color name="role_mage">#06B6D4</color>        <!-- Cyan -->
+    <color name="role_support">#10B981</color>     <!-- Emerald -->
+
+    <!-- Per-role translucent backgrounds for stat rows -->
+    <color name="role_marksman_bg">#1AF59E0B</color>
+    <color name="role_fighter_bg">#1AEF4444</color>
+    <color name="role_assassin_bg">#1A8B5CF6</color>
+    <color name="role_tank_bg">#1A3B82F6</color>
+    <color name="role_mage_bg">#1A06B6D4</color>
+    <color name="role_support_bg">#1A10B981</color>
+
+    <!-- Gradient overlay -->
+    <color name="gradient_start">#000F0F13</color>
+    <color name="gradient_end">#E60F0F13</color>
+
+    <!-- Chip tag colors -->
+    <color name="chip_bg_type">#242436</color>
+    <color name="chip_text_type">#C8C8DA</color>
 </resources>

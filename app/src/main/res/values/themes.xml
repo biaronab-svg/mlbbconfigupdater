@@ -13,17 +13,18 @@
         <item name="colorOnSurfaceVariant">@color/on_surface_variant</item>
         <item name="colorOutlineVariant">@color/outline_variant</item>
         <item name="colorError">@color/error</item>
-        
+
         <!-- Standard M3 attributes -->
         <item name="android:windowBackground">?attr/colorSurface</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>
-        
+
         <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.HeroConfig.Medium</item>
     </style>
 
+    <!-- ── Shape styles ──────────────────────────────────────── -->
     <style name="ShapeAppearance.HeroConfig.Medium" parent="ShapeAppearance.Material3.MediumComponent">
         <item name="cornerSize">12dp</item>
     </style>
@@ -31,12 +32,68 @@
     <!-- Rounded corners for ShapeableImageView (skins/heroes logos) -->
     <style name="ShapeAppearance.RoundedImage" parent="">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">12dp</item>
+        <item name="cornerSize">14dp</item>
     </style>
 
+    <!-- Larger rounded corners for hero cards -->
+    <style name="ShapeAppearance.RoundedCardLarge" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/card_corner_radius</item>
+    </style>
+
+    <!-- Medium rounded corners for skin/upgrade cards -->
+    <style name="ShapeAppearance.RoundedCardMedium" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/card_corner_radius_medium</item>
+    </style>
+
+    <!-- Circle image (for hero logo overlay) -->
+    <style name="ShapeAppearance.CircleImage" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- ── Text appearances ──────────────────────────────────── -->
     <style name="TextAppearance.HeroConfig.Toolbar" parent="TextAppearance.Material3.TitleLarge">
         <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="TextAppearance.HeroConfig.HeroName" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="TextAppearance.HeroConfig.HeroTitle" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">@color/on_surface_variant</item>
+    </style>
+
+    <style name="TextAppearance.HeroConfig.EmptyTitle" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textColor">@color/on_surface_variant</item>
+    </style>
+
+    <style name="TextAppearance.HeroConfig.EmptySub" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">@color/on_surface_variant</item>
+        <item name="android:alpha">0.7</item>
+    </style>
+
+    <!-- ── Card style overrides ──────────────────────────────── -->
+    <style name="Widget.HeroConfig.HeroCard" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">@dimen/card_corner_radius</item>
+        <item name="cardBackgroundColor">@color/card_surface</item>
+        <item name="cardElevation">6dp</item>
+    </style>
+
+    <style name="Widget.HeroConfig.SkinCard" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">@dimen/card_corner_radius_medium</item>
+        <item name="cardBackgroundColor">@color/card_surface</item>
+        <item name="cardElevation">3dp</item>
+    </style>
+
+    <!-- ── Bottom Navigation ─────────────────────────────────── -->
+    <style name="Widget.HeroConfig.BottomNav" parent="Widget.Material3.BottomNavigationView">
+        <item name="android:background">@color/card_surface</item>
     </style>
 
 </resources>

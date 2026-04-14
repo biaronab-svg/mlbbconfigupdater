@@ -12,63 +12,69 @@
     app:cardBackgroundColor="?attr/colorSurface"
     app:strokeWidth="0dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical">
+        android:padding="12dp">
 
         <!-- Drag handle -->
         <ImageView
             android:id="@+id/imgDragHandle"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:src="@drawable/ic_drag_handle"
             android:alpha="0.6"
             android:contentDescription="Drag to reorder"
-            android:layout_marginEnd="12dp"
-            android:padding="4dp" />
+            android:padding="4dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <!-- Rounded skin logo -->
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imgSkinLogo"
             android:layout_width="56dp"
             android:layout_height="56dp"
+            android:layout_marginStart="8dp"
             android:scaleType="centerCrop"
             android:contentDescription="@string/skin_logo_desc"
-            app:shapeAppearanceOverlay="@style/ShapeAppearance.RoundedImage" />
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.RoundedImage"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imgDragHandle" />
 
-        <LinearLayout
+        <!-- Skin Info -->
+        <TextView
+            android:id="@+id/tvSkinTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginStart="16dp">
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+            android:textColor="?attr/colorOnSurface"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="@id/imgSkinLogo"
+            app:layout_constraintStart_toEndOf="@id/imgSkinLogo"
+            app:layout_constraintEnd_toStartOf="@id/btnEditSkin"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintBottom_toTopOf="@id/chipSkinType" />
 
-            <TextView
-                android:id="@+id/tvSkinTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
-                android:textColor="?attr/colorOnSurface"
-                android:textStyle="bold" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipSkinType"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/Widget.Material3.Chip.Suggestion"
-                android:layout_marginTop="6dp"
-                android:textSize="12sp"
-                android:clickable="false"
-                android:focusable="false"
-                app:chipMinHeight="28dp"
-                app:chipBackgroundColor="?attr/colorSurfaceVariant"
-                app:chipStrokeWidth="0dp"
-                app:chipCornerRadius="14dp" />
-
-        </LinearLayout>
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipSkinType"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            style="@style/Widget.Material3.Chip.Suggestion"
+            android:layout_marginTop="4dp"
+            android:textSize="11sp"
+            android:clickable="false"
+            android:focusable="false"
+            app:chipMinHeight="28dp"
+            app:chipBackgroundColor="?attr/colorSurfaceVariant"
+            app:chipStrokeWidth="0dp"
+            app:chipCornerRadius="14dp"
+            app:layout_constraintTop_toBottomOf="@id/tvSkinTitle"
+            app:layout_constraintStart_toStartOf="@id/tvSkinTitle"
+            app:layout_constraintBottom_toBottomOf="@id/imgSkinLogo" />
 
         <!-- Actions -->
         <com.google.android.material.button.MaterialButton
@@ -78,19 +84,25 @@
             android:layout_height="44dp"
             android:contentDescription="@string/edit_skin"
             app:icon="@drawable/ic_edit"
-            app:iconSize="20dp" />
+            app:iconSize="20dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnDeleteSkin" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDeleteSkin"
             style="@style/Widget.Material3.Button.IconButton"
             android:layout_width="44dp"
             android:layout_height="44dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="4dp"
             android:contentDescription="@string/delete_skin"
             app:icon="@drawable/ic_delete"
             app:iconTint="?attr/colorError"
-            app:iconSize="20dp" />
+            app:iconSize="20dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

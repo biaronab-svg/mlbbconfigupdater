@@ -2,148 +2,143 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="?attr/materialCardViewElevatedStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
     android:layout_marginTop="8dp"
     android:layout_marginBottom="12dp"
-    android:foreground="?attr/selectableItemBackground"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    style="?attr/materialCardViewElevatedStyle"
+    app:cardCornerRadius="20dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <!-- Splash banner with gradient overlay -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="140dp">
+        <!-- Splash banner -->
+        <ImageView
+            android:id="@+id/imgHeroSplash"
+            android:layout_width="0dp"
+            android:layout_height="140dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/hero_splash_desc"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-            <ImageView
-                android:id="@+id/imgHeroSplash"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:contentDescription="@string/hero_splash_desc" />
+        <!-- Gradient overlay -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:background="@drawable/gradient_bottom_fade"
+            app:layout_constraintBottom_toBottomOf="@id/imgHeroSplash"
+            app:layout_constraintStart_toStartOf="@id/imgHeroSplash"
+            app:layout_constraintEnd_toEndOf="@id/imgHeroSplash" />
 
-            <!-- Gradient overlay so text on top of image is readable -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_gravity="bottom"
-                android:background="@drawable/gradient_bottom_fade" />
+        <!-- Hero logo -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imgHeroLogo"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="-32dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/hero_logo_desc"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.RoundedImage"
+            app:strokeColor="?attr/colorSurface"
+            app:strokeWidth="2dp"
+            app:layout_constraintTop_toBottomOf="@id/imgHeroSplash"
+            app:layout_constraintStart_toStartOf="parent" />
 
-        </FrameLayout>
-
-        <!-- Body -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- Hero Name -->
+        <TextView
+            android:id="@+id/tvHeroName"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingStart="16dp"
-            android:paddingEnd="12dp"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:gravity="center_vertical">
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="16dp"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:textColor="?attr/colorOnSurface"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/imgHeroSplash"
+            app:layout_constraintStart_toEndOf="@id/imgHeroLogo"
+            app:layout_constraintEnd_toStartOf="@id/actionContainer" />
 
-            <!-- Hero logo — rounded via ShapeableImageView -->
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/imgHeroLogo"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:scaleType="centerCrop"
-                android:contentDescription="@string/hero_logo_desc"
-                app:shapeAppearanceOverlay="@style/ShapeAppearance.RoundedImage" />
+        <!-- Hero Title -->
+        <TextView
+            android:id="@+id/tvHeroTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            app:layout_constraintTop_toBottomOf="@id/tvHeroName"
+            app:layout_constraintStart_toStartOf="@id/tvHeroName"
+            app:layout_constraintEnd_toEndOf="@id/tvHeroName" />
 
-            <!-- Hero info -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_marginStart="16dp">
+        <!-- Chips -->
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipSkinsCount"
+            style="@style/Widget.Material3.Chip.Suggestion"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:textSize="11sp"
+            android:clickable="false"
+            android:focusable="false"
+            app:layout_constraintTop_toBottomOf="@id/tvHeroTitle"
+            app:layout_constraintStart_toStartOf="@id/tvHeroName"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
-                <TextView
-                    android:id="@+id/tvHeroName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textStyle="bold" />
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipUpgradesCount"
+            style="@style/Widget.Material3.Chip.Suggestion"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_marginStart="8dp"
+            android:textSize="11sp"
+            android:clickable="false"
+            android:focusable="false"
+            app:layout_constraintTop_toTopOf="@id/chipSkinsCount"
+            app:layout_constraintStart_toEndOf="@id/chipSkinsCount" />
 
-                <TextView
-                    android:id="@+id/tvHeroTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    android:layout_marginTop="2dp" />
+        <!-- Action Buttons Container -->
+        <LinearLayout
+            android:id="@+id/actionContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/imgHeroSplash"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-                <!-- Chips row -->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="8dp"
-                    android:gravity="center_vertical">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEditHero"
+                style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:contentDescription="@string/edit_hero"
+                app:icon="@drawable/ic_edit"
+                app:iconSize="20dp" />
 
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chipSkinsCount"
-                        style="@style/Widget.Material3.Chip.Suggestion"
-                        android:layout_width="wrap_content"
-                        android:layout_height="32dp"
-                        android:textSize="11sp"
-                        android:clickable="false"
-                        android:focusable="false" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chipUpgradesCount"
-                        style="@style/Widget.Material3.Chip.Suggestion"
-                        android:layout_width="wrap_content"
-                        android:layout_height="32dp"
-                        android:layout_marginStart="8dp"
-                        android:textSize="11sp"
-                        android:clickable="false"
-                        android:focusable="false" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- Edit / Delete actions -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnEditHero"
-                    style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:contentDescription="@string/edit_hero"
-                    app:icon="@drawable/ic_edit"
-                    app:iconSize="20dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnDeleteHero"
-                    style="@style/Widget.Material3.Button.IconButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginTop="8dp"
-                    android:contentDescription="@string/delete_hero"
-                    app:icon="@drawable/ic_delete"
-                    app:iconTint="?attr/colorError"
-                    app:iconSize="20dp" />
-
-            </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDeleteHero"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="4dp"
+                android:contentDescription="@string/delete_hero"
+                app:icon="@drawable/ic_delete"
+                app:iconTint="?attr/colorError"
+                app:iconSize="20dp" />
 
         </LinearLayout>
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

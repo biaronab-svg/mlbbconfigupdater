@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:paddingVertical="8dp"
-    android:paddingHorizontal="12dp"
-    android:gravity="center_vertical">
+    android:paddingVertical="12dp"
+    android:paddingHorizontal="16dp">
 
     <!-- Drag handle for source skins -->
     <ImageView
@@ -17,73 +15,73 @@
         android:src="@drawable/ic_drag_handle"
         android:alpha="0.5"
         android:contentDescription="Drag"
-        android:layout_marginEnd="12dp"
-        android:padding="2dp" />
+        android:padding="2dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imgAvailableSkinLogo"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="12dp"
         android:scaleType="centerCrop"
         android:contentDescription="Source skin logo"
-        app:shapeAppearanceOverlay="@style/ShapeAppearance.RoundedImage" />
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.RoundedImage"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imgSourceDragHandle" />
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/tvAvailableSkinTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:layout_marginStart="16dp">
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="12dp"
+        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+        android:textColor="?attr/colorOnSurface"
+        app:layout_constraintTop_toTopOf="@id/imgAvailableSkinLogo"
+        app:layout_constraintStart_toEndOf="@id/imgAvailableSkinLogo"
+        app:layout_constraintEnd_toStartOf="@id/btnEditAvailableSkin"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintBottom_toTopOf="@id/tvAvailableSkinType" />
 
-        <TextView
-            android:id="@+id/tvAvailableSkinTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
-            android:textColor="?attr/colorOnSurface" />
-
-        <TextView
-            android:id="@+id/tvAvailableSkinType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:layout_marginTop="2dp" />
-
-    </LinearLayout>
+    <TextView
+        android:id="@+id/tvAvailableSkinType"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:layout_marginTop="2dp"
+        app:layout_constraintTop_toBottomOf="@id/tvAvailableSkinTitle"
+        app:layout_constraintStart_toStartOf="@id/tvAvailableSkinTitle"
+        app:layout_constraintEnd_toEndOf="@id/tvAvailableSkinTitle"
+        app:layout_constraintBottom_toBottomOf="@id/imgAvailableSkinLogo" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnEditAvailableSkin"
         style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
-        android:layout_width="38dp"
-        android:layout_height="38dp"
-        android:layout_marginEnd="6dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:contentDescription="Edit source skin"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:insetLeft="0dp"
-        android:insetRight="0dp"
-        android:padding="0dp"
         app:icon="@drawable/ic_edit"
-        app:iconSize="20dp"
-        app:iconPadding="0dp"
-        app:iconGravity="textStart" />
+        app:iconSize="18dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btnRemoveAvailableSkin" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnRemoveAvailableSkin"
         style="@style/Widget.Material3.Button.IconButton"
-        android:layout_width="38dp"
-        android:layout_height="38dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="4dp"
         android:contentDescription="Remove source skin"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:insetLeft="0dp"
-        android:insetRight="0dp"
-        android:padding="0dp"
         app:icon="@drawable/ic_delete"
         app:iconTint="?attr/colorError"
-        app:iconSize="20dp"
-        app:iconPadding="0dp"
-        app:iconGravity="textStart" />
+        app:iconSize="18dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
