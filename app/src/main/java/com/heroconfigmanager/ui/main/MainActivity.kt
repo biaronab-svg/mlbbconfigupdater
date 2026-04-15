@@ -3,11 +3,19 @@ package com.heroconfigmanager.ui.main
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnLayout
+import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.color.MaterialColors
 import com.heroconfigmanager.R
 import com.heroconfigmanager.databinding.ActivityMainBinding
 import com.heroconfigmanager.ui.SharedViewModel
@@ -17,14 +25,12 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: SharedViewModel
+    private var lastSyncText: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Enable edge-to-edge drawing so the app renders behind system bars
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        // Use the application-scoped SharedViewModel so updates in EditorActivity are seen here
         viewModel = androidx.lifecycle.ViewModelProvider(
             (application as com.heroconfigmanager.HeroConfigApp).appViewModelStore,
             androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.getInstance(application)
@@ -38,54 +44,150 @@ class MainActivity : AppCompatActivity() {
         val navHost = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHost.navController
+        val useNavigationRail = resources.getBoolean(R.bool.use_navigation_rail)
 
-        binding.bottomNav.setupWithNavController(navController)
+        binding.railCard.isVisible = useNavigationRail
+        binding.bottomNavCard.isVisible = !useNavigationRail
 
-        // ── Badge showing total hero count on the Heroes tab ──────────
-        val badge = binding.bottomNav.getOrCreateBadge(R.id.heroesFragment)
-        badge.isVisible = false
-        badge.backgroundColor = getColor(R.color.error)
-        badge.badgeTextColor = getColor(R.color.on_primary)
-        // M3-style tight offsets
-        val offsetPx = (4 * resources.displayMetrics.density).toInt()
-        badge.verticalOffset  = offsetPx
-        badge.horizontalOffset = offsetPx
-
-        viewModel.config.observe(this) { config ->
-            val total = config.roles.totalHeroes()
-            badge.number    = total
-            badge.isVisible = total > 0
+        if (useNavigationRail) {
+            binding.navigationRail.setupWithNavController(navController)
+        } else {
+            binding.bottomNav.setupWithNavController(navController)
         }
 
-        // ── FAB visibility — show only on Heroes screen ──────────────
-        // The FAB is anchored to the BottomNav in the layout, so it
-        // automatically stays above it without any extra margin calculation.
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id == R.id.heroesFragment) {
-                binding.fabAddHeroMain.show()
-            } else {
-                binding.fabAddHeroMain.hide()
+        applyEdgeToEdgeInsets(useNavigationRail)
+
+        val badge = binding.bottomNav.getOrCreateBadge(R.id.heroesFragment)
+        badge.isVisible = false
+        badge.backgroundColor = MaterialColors.getColor(binding.bottomNav, com.google.android.material.R.attr.colorError)
+        badge.badgeTextColor = MaterialColors.getColor(binding.bottomNav, com.google.android.material.R.attr.colorOnError)
+        val badgeOffset = (4 * resources.displayMetrics.density).toInt()
+        badge.verticalOffset = badgeOffset
+        badge.horizontalOffset = badgeOffset
+        if (useNavigationRail) {
+            binding.navigationRail.getOrCreateBadge(R.id.heroesFragment).apply {
+                isVisible = false
+                backgroundColor = badge.backgroundColor
+                badgeTextColor = badge.badgeTextColor
+                verticalOffset = badgeOffset
+                horizontalOffset = badgeOffset
             }
         }
 
-        // ── Global error toast ────────────────────────────────────────
+        viewModel.config.observe(this) { config ->
+            val total = config.roles.totalHeroes()
+            badge.number = total
+            badge.isVisible = total > 0
+            if (useNavigationRail) {
+                binding.navigationRail.getOrCreateBadge(R.id.heroesFragment).apply {
+                    number = total
+                    isVisible = total > 0
+                }
+            }
+        }
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            binding.fabAddHeroMain.isVisible = destination.id == R.id.heroesFragment
+            binding.fabAddHeroMain.text = getString(R.string.add_hero)
+            binding.collapsingToolbar.title = destination.label?.toString() ?: getString(R.string.app_name)
+            updateToolbarSubtitle()
+        }
+
         viewModel.uiState.observe(this) { state ->
             if (state is UiState.Error) {
                 Toast.makeText(this, state.message, Toast.LENGTH_LONG).show()
             }
         }
 
-        // ── Last-sync subtitle in collapsing toolbar ──────────────────
         viewModel.lastSync.observe(this) { time ->
-            binding.collapsingToolbar.title = if (time.isNotEmpty())
-                "${getString(R.string.app_name)}  ·  $time"
-            else
-                getString(R.string.app_name)
+            lastSyncText = time
+            updateToolbarSubtitle()
         }
 
-        // Load config on first launch only (not on rotation)
         if (savedInstanceState == null) {
             viewModel.fetchConfig()
+        }
+    }
+
+    private fun updateToolbarSubtitle() {
+        binding.toolbar.subtitle = if (lastSyncText.isNotEmpty()) {
+            getString(R.string.main_toolbar_subtitle_synced, lastSyncText)
+        } else {
+            null
+        }
+    }
+
+    private fun applyEdgeToEdgeInsets(useNavigationRail: Boolean) {
+        val bottomNavHorizontal = resources.getDimensionPixelSize(R.dimen.bottom_nav_margin_horizontal)
+        val bottomNavBottom = resources.getDimensionPixelSize(R.dimen.bottom_nav_margin_bottom)
+        val fabMarginEnd = resources.getDimensionPixelSize(R.dimen.fab_margin_end)
+        val fabMarginBottom = resources.getDimensionPixelSize(R.dimen.fab_margin_bottom)
+        val fabNavGap = resources.getDimensionPixelSize(R.dimen.fab_nav_gap)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            binding.appBarLayout.updatePadding(top = systemBars.top)
+
+            if (useNavigationRail) {
+                (binding.railCard.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams).apply {
+                    topMargin = 12.dp + systemBars.top
+                    bottomMargin = 12.dp + systemBars.bottom
+                    leftMargin = 12.dp + systemBars.left
+                    binding.railCard.layoutParams = this
+                }
+            } else {
+                (binding.bottomNavCard.layoutParams as CoordinatorLayout.LayoutParams).apply {
+                    leftMargin = bottomNavHorizontal + systemBars.left
+                    rightMargin = bottomNavHorizontal + systemBars.right
+                    bottomMargin = bottomNavBottom + systemBars.bottom
+                    binding.bottomNavCard.layoutParams = this
+                }
+            }
+
+            updateFabPosition(
+                useNavigationRail = useNavigationRail,
+                fabMarginEnd = fabMarginEnd,
+                fabMarginBottom = fabMarginBottom,
+                fabNavGap = fabNavGap,
+                systemBars = systemBars
+            )
+
+            insets
+        }
+    }
+
+    private fun updateFabPosition(
+        useNavigationRail: Boolean,
+        fabMarginEnd: Int,
+        fabMarginBottom: Int,
+        fabNavGap: Int,
+        systemBars: androidx.core.graphics.Insets,
+    ) {
+        if (useNavigationRail) {
+            (binding.fabAddHeroMain.layoutParams as CoordinatorLayout.LayoutParams).apply {
+                anchorId = View.NO_ID
+                anchorGravity = 0
+                gravity = android.view.Gravity.BOTTOM or android.view.Gravity.END
+                marginEnd = fabMarginEnd + systemBars.right
+                bottomMargin = fabMarginBottom + systemBars.bottom
+                binding.fabAddHeroMain.layoutParams = this
+            }
+            return
+        }
+
+        binding.bottomNavCard.doOnLayout {
+            (binding.fabAddHeroMain.layoutParams as CoordinatorLayout.LayoutParams).apply {
+                anchorId = View.NO_ID
+                anchorGravity = 0
+                gravity = android.view.Gravity.BOTTOM or android.view.Gravity.END
+                marginEnd = fabMarginEnd + systemBars.right
+                bottomMargin = binding.bottomNavCard.height +
+                    resources.getDimensionPixelSize(R.dimen.bottom_nav_margin_bottom) +
+                    systemBars.bottom +
+                    fabNavGap
+                binding.fabAddHeroMain.layoutParams = this
+            }
         }
     }
 
@@ -103,4 +205,7 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    private val Int.dp: Int
+        get() = (this * resources.displayMetrics.density).toInt()
 }

@@ -2,106 +2,125 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.HeroConfig.SkinCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginBottom="8dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="2dp"
-    app:cardBackgroundColor="?attr/colorSurface"
-    app:strokeWidth="0dp">
+    android:layout_marginHorizontal="@dimen/card_margin_horizontal"
+    android:layout_marginTop="6dp"
+    android:layout_marginBottom="6dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp">
+        android:padding="@dimen/card_inner_padding">
 
-        <!-- Drag handle -->
         <ImageView
             android:id="@+id/imgDragHandle"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:alpha="0.55"
+            android:background="?attr/colorSurfaceContainerHighest"
+            android:contentDescription="@string/drag_to_reorder"
+            android:padding="5dp"
             android:src="@drawable/ic_drag_handle"
-            android:alpha="0.6"
-            android:contentDescription="Drag to reorder"
-            android:padding="4dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintBottom_toBottomOf="@id/skeletonSkinLogo"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/skeletonSkinLogo"
+            app:tint="?attr/colorOnSurfaceVariant" />
 
-        <!-- Rounded skin logo -->
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imgSkinLogo"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="8dp"
-            android:scaleType="centerCrop"
-            android:contentDescription="@string/skin_logo_desc"
-            app:shapeAppearanceOverlay="@style/ShapeAppearance.RoundedImage"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/imgDragHandle" />
+        <com.faltenreich.skeletonlayout.SkeletonLayout
+            android:id="@+id/skeletonSkinLogo"
+            android:layout_width="@dimen/skin_logo_size"
+            android:layout_height="@dimen/skin_logo_size"
+            android:layout_marginStart="12dp"
+            app:layout_constraintStart_toEndOf="@id/imgDragHandle"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Skin Info -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imgSkinLogo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/colorSurfaceContainerHighest"
+                android:contentDescription="@string/skin_logo_desc"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.RoundedImage"
+                app:strokeColor="?attr/colorOutlineVariant"
+                app:strokeWidth="1dp"
+                tools:src="@tools:sample/avatars" />
+
+        </com.faltenreich.skeletonlayout.SkeletonLayout>
+
+        <LinearLayout
+            android:id="@+id/actionContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEditSkin"
+                style="@style/Widget.HeroConfig.IconButton.Tonal"
+                android:layout_width="@dimen/skin_action_size"
+                android:layout_height="@dimen/skin_action_size"
+                android:contentDescription="@string/edit_skin"
+                app:icon="@drawable/ic_edit"
+                app:iconSize="@dimen/action_icon_size" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDeleteSkin"
+                style="@style/Widget.HeroConfig.IconButton.Outlined"
+                android:layout_width="@dimen/skin_action_size"
+                android:layout_height="@dimen/skin_action_size"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/delete_skin"
+                app:icon="@drawable/ic_delete"
+                app:iconSize="@dimen/action_icon_size"
+                app:iconTint="?attr/colorError" />
+
+        </LinearLayout>
+
         <TextView
             android:id="@+id/tvSkinTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+            android:layout_marginEnd="12dp"
+            android:maxLines="2"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
             android:textColor="?attr/colorOnSurface"
             android:textStyle="bold"
-            app:layout_constraintTop_toTopOf="@id/imgSkinLogo"
-            app:layout_constraintStart_toEndOf="@id/imgSkinLogo"
-            app:layout_constraintEnd_toStartOf="@id/btnEditSkin"
-            app:layout_constraintVertical_chainStyle="packed"
-            app:layout_constraintBottom_toTopOf="@id/chipSkinType" />
+            app:layout_constraintEnd_toStartOf="@id/actionContainer"
+            app:layout_constraintStart_toEndOf="@id/skeletonSkinLogo"
+            app:layout_constraintTop_toTopOf="@id/skeletonSkinLogo"
+            tools:text="Default Skin" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipSkinType"
+            style="@style/Widget.HeroConfig.Chip.Tonal"
             android:layout_width="wrap_content"
-            android:layout_height="28dp"
-            style="@style/Widget.Material3.Chip.Suggestion"
-            android:layout_marginTop="4dp"
-            android:textSize="11sp"
-            android:clickable="false"
-            android:focusable="false"
-            app:chipMinHeight="28dp"
-            app:chipBackgroundColor="?attr/colorSurfaceVariant"
-            app:chipStrokeWidth="0dp"
-            app:chipCornerRadius="14dp"
-            app:layout_constraintTop_toBottomOf="@id/tvSkinTitle"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/chip_text_size"
+            tools:text="Common" />
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/chipFlow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:constraint_referenced_ids="chipSkinType"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/tvSkinTitle"
-            app:layout_constraintBottom_toBottomOf="@id/imgSkinLogo" />
+            app:layout_constraintTop_toBottomOf="@id/tvSkinTitle" />
 
-        <!-- Actions -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnEditSkin"
-            style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:contentDescription="@string/edit_skin"
-            app:icon="@drawable/ic_edit"
-            app:iconSize="20dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnDeleteSkin" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDeleteSkin"
-            style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_marginStart="4dp"
-            android:contentDescription="@string/delete_skin"
-            app:icon="@drawable/ic_delete"
-            app:iconTint="?attr/colorError"
-            app:iconSize="20dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            app:layout_constraintBottom_toBottomOf="@id/skeletonSkinLogo"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chipFlow" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

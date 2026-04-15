@@ -15,4 +15,9 @@
         android:name="com.heroconfigmanager.ui.config.ConfigFragment"
         android:label="Config" />
 
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.heroconfigmanager.ui.settings.SettingsFragment"
+        android:label="Settings" />
+
 </navigation>

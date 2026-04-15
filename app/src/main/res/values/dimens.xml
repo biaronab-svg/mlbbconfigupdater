@@ -1,57 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- ── Card spacing ──────────────────────────────────────── -->
     <dimen name="card_margin_horizontal">12dp</dimen>
     <dimen name="card_margin_vertical">8dp</dimen>
-    <dimen name="card_inner_padding">12dp</dimen>
-    <dimen name="card_corner_radius">20dp</dimen>
-    <dimen name="card_corner_radius_medium">16dp</dimen>
+    <dimen name="card_inner_padding">16dp</dimen>
+    <dimen name="card_corner_radius">24dp</dimen>
+    <dimen name="card_corner_radius_medium">20dp</dimen>
 
-    <!-- ── Hero card ─────────────────────────────────────────── -->
-    <dimen name="hero_splash_height">150dp</dimen>
-    <dimen name="hero_logo_size">60dp</dimen>
+    <dimen name="hero_splash_height">176dp</dimen>
+    <dimen name="hero_logo_size">68dp</dimen>
     <dimen name="hero_logo_stroke">3dp</dimen>
-    <dimen name="hero_gradient_height">64dp</dimen>
+    <dimen name="hero_gradient_height">88dp</dimen>
 
-    <!-- ── Skin card ─────────────────────────────────────────── -->
-    <dimen name="skin_logo_size">52dp</dimen>
+    <dimen name="skin_logo_size">56dp</dimen>
     <dimen name="skin_action_size">40dp</dimen>
-    <dimen name="available_skin_logo_size">44dp</dimen>
+    <dimen name="available_skin_logo_size">48dp</dimen>
 
-    <!-- ── Toolbar & AppBar ──────────────────────────────────── -->
-    <dimen name="collapsing_toolbar_height">156dp</dimen>
+    <dimen name="collapsing_toolbar_height">176dp</dimen>
     <dimen name="expanded_title_margin_start">24dp</dimen>
-    <dimen name="expanded_title_margin_bottom">24dp</dimen>
+    <dimen name="expanded_title_margin_bottom">28dp</dimen>
 
-    <!-- ── General spacing ───────────────────────────────────── -->
     <dimen name="screen_padding_horizontal">16dp</dimen>
-    <dimen name="list_padding_horizontal">8dp</dimen>
+    <dimen name="screen_padding_vertical">12dp</dimen>
+    <dimen name="list_padding_horizontal">4dp</dimen>
     <dimen name="list_padding_top">8dp</dimen>
-    <dimen name="list_padding_bottom">140dp</dimen>
+    <dimen name="list_padding_bottom">156dp</dimen>
     <dimen name="fab_margin_end">16dp</dimen>
     <dimen name="fab_margin_bottom">20dp</dimen>
+    <dimen name="fab_nav_gap">12dp</dimen>
+    <dimen name="bottom_nav_margin_horizontal">16dp</dimen>
+    <dimen name="bottom_nav_margin_bottom">12dp</dimen>
+    <dimen name="bottom_nav_inner_padding">6dp</dimen>
     <dimen name="section_spacing">20dp</dimen>
     <dimen name="field_spacing">12dp</dimen>
+    <dimen name="section_card_padding">20dp</dimen>
+    <dimen name="chip_spacing">8dp</dimen>
 
-    <!-- ── Empty state ───────────────────────────────────────── -->
     <dimen name="empty_icon_size">72dp</dimen>
-    <dimen name="empty_padding">32dp</dimen>
+    <dimen name="empty_padding">28dp</dimen>
 
-    <!-- ── Content max width (unlimited on phone) ────────────── -->
     <dimen name="content_max_width">9999dp</dimen>
 
-    <!-- ── Config stat bar height ────────────────────────────── -->
-    <dimen name="stat_bar_height">6dp</dimen>
-    <dimen name="stat_bar_corner">3dp</dimen>
+    <dimen name="stat_bar_height">8dp</dimen>
+    <dimen name="stat_bar_corner">4dp</dimen>
     <dimen name="stat_row_spacing">14dp</dimen>
 
-    <!-- ── Chip sizes ────────────────────────────────────────── -->
-    <dimen name="chip_height">28dp</dimen>
+    <dimen name="chip_height">30dp</dimen>
     <dimen name="chip_text_size">11sp</dimen>
 
-    <!-- ── Button sizing ─────────────────────────────────────── -->
-    <dimen name="action_button_size">44dp</dimen>
-    <dimen name="action_icon_size">20dp</dimen>
+    <dimen name="action_button_size">40dp</dimen>
+    <dimen name="action_icon_size">18dp</dimen>
     <dimen name="save_button_height">56dp</dimen>
     <dimen name="save_button_margin_horizontal">20dp</dimen>
 </resources>

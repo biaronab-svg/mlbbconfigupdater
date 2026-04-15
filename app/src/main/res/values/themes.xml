@@ -2,98 +2,189 @@
 <resources>
 
     <style name="Theme.HeroConfigManager" parent="Theme.Material3.Dark.NoActionBar">
-        <!-- Core M3 Colors -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorOnPrimary">@color/on_primary</item>
         <item name="colorPrimaryContainer">@color/primary_container</item>
         <item name="colorOnPrimaryContainer">@color/on_primary_container</item>
+        <item name="colorSecondaryContainer">@color/secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/on_secondary_container</item>
         <item name="colorSurface">@color/surface</item>
         <item name="colorOnSurface">@color/on_surface</item>
         <item name="colorSurfaceVariant">@color/surface_variant</item>
         <item name="colorOnSurfaceVariant">@color/on_surface_variant</item>
+        <item name="colorSurfaceContainer">@color/surface_container</item>
+        <item name="colorSurfaceContainerHigh">@color/surface_container_high</item>
+        <item name="colorSurfaceContainerHighest">@color/surface_container_highest</item>
         <item name="colorOutlineVariant">@color/outline_variant</item>
         <item name="colorError">@color/error</item>
 
-        <!-- Standard M3 attributes -->
-        <item name="android:windowBackground">?attr/colorSurface</item>
+        <item name="android:windowBackground">@color/background</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>
 
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.HeroConfig.Small</item>
         <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.HeroConfig.Medium</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.HeroConfig.Large</item>
     </style>
 
-    <!-- ── Shape styles ──────────────────────────────────────── -->
-    <style name="ShapeAppearance.HeroConfig.Medium" parent="ShapeAppearance.Material3.MediumComponent">
-        <item name="cornerSize">12dp</item>
-    </style>
-
-    <!-- Rounded corners for ShapeableImageView (skins/heroes logos) -->
-    <style name="ShapeAppearance.RoundedImage" parent="">
-        <item name="cornerFamily">rounded</item>
+    <style name="ShapeAppearance.HeroConfig.Small" parent="ShapeAppearance.Material3.SmallComponent">
         <item name="cornerSize">14dp</item>
     </style>
 
-    <!-- Larger rounded corners for hero cards -->
-    <style name="ShapeAppearance.RoundedCardLarge" parent="">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">@dimen/card_corner_radius</item>
+    <style name="ShapeAppearance.HeroConfig.Medium" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerSize">18dp</item>
     </style>
 
-    <!-- Medium rounded corners for skin/upgrade cards -->
-    <style name="ShapeAppearance.RoundedCardMedium" parent="">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">@dimen/card_corner_radius_medium</item>
+    <style name="ShapeAppearance.HeroConfig.Large" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerSize">28dp</item>
     </style>
 
-    <!-- Circle image (for hero logo overlay) -->
+    <style name="ShapeAppearance.RoundedImage" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">18dp</item>
+    </style>
+
     <style name="ShapeAppearance.CircleImage" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
 
-    <!-- ── Text appearances ──────────────────────────────────── -->
     <style name="TextAppearance.HeroConfig.Toolbar" parent="TextAppearance.Material3.TitleLarge">
         <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
-    <style name="TextAppearance.HeroConfig.HeroName" parent="TextAppearance.Material3.TitleMedium">
-        <item name="android:textColor">?attr/colorOnSurface</item>
-        <item name="android:textStyle">bold</item>
+    <style name="TextAppearance.HeroConfig.SectionLabel" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textColor">?attr/colorPrimary</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
-    <style name="TextAppearance.HeroConfig.HeroTitle" parent="TextAppearance.Material3.BodyMedium">
-        <item name="android:textColor">@color/on_surface_variant</item>
+    <style name="TextAppearance.HeroConfig.SectionTitle" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
-    <style name="TextAppearance.HeroConfig.EmptyTitle" parent="TextAppearance.Material3.TitleLarge">
-        <item name="android:textColor">@color/on_surface_variant</item>
+    <style name="TextAppearance.HeroConfig.BodyMuted" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
     </style>
 
-    <style name="TextAppearance.HeroConfig.EmptySub" parent="TextAppearance.Material3.BodyMedium">
-        <item name="android:textColor">@color/on_surface_variant</item>
-        <item name="android:alpha">0.7</item>
+    <style name="Widget.HeroConfig.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="titleTextAppearance">@style/TextAppearance.HeroConfig.Toolbar</item>
+        <item name="navigationIconTint">?attr/colorOnSurface</item>
     </style>
 
-    <!-- ── Card style overrides ──────────────────────────────── -->
     <style name="Widget.HeroConfig.HeroCard" parent="Widget.Material3.CardView.Elevated">
         <item name="cardCornerRadius">@dimen/card_corner_radius</item>
-        <item name="cardBackgroundColor">@color/card_surface</item>
-        <item name="cardElevation">6dp</item>
+        <item name="cardBackgroundColor">?attr/colorSurfaceContainerHigh</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">?attr/colorOutlineVariant</item>
+        <item name="strokeWidth">1dp</item>
     </style>
 
-    <style name="Widget.HeroConfig.SkinCard" parent="Widget.Material3.CardView.Elevated">
+    <style name="Widget.HeroConfig.SkinCard" parent="Widget.Material3.CardView.Outlined">
         <item name="cardCornerRadius">@dimen/card_corner_radius_medium</item>
-        <item name="cardBackgroundColor">@color/card_surface</item>
-        <item name="cardElevation">3dp</item>
+        <item name="cardBackgroundColor">?attr/colorSurfaceContainer</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">?attr/colorOutlineVariant</item>
+        <item name="strokeWidth">1dp</item>
     </style>
 
-    <!-- ── Bottom Navigation ─────────────────────────────────── -->
+    <style name="Widget.HeroConfig.SectionCard" parent="Widget.Material3.CardView.Outlined">
+        <item name="cardCornerRadius">@dimen/card_corner_radius_medium</item>
+        <item name="cardBackgroundColor">?attr/colorSurfaceContainer</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">?attr/colorOutlineVariant</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="Widget.HeroConfig.SurfaceCard" parent="Widget.Material3.CardView.Filled">
+        <item name="cardCornerRadius">@dimen/card_corner_radius_medium</item>
+        <item name="cardBackgroundColor">?attr/colorSurfaceContainerHigh</item>
+        <item name="cardElevation">0dp</item>
+    </style>
+
+    <style name="ThemeOverlay.HeroConfig.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.HeroConfig.BottomSheet</item>
+    </style>
+
+    <style name="Widget.HeroConfig.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.HeroConfig.Large</item>
+    </style>
+
+    <style name="Widget.HeroConfig.TabLayout" parent="Widget.Material3.TabLayout">
+        <item name="tabIndicatorFullWidth">false</item>
+        <item name="tabIndicatorAnimationMode">elastic</item>
+        <item name="tabIndicatorColor">?attr/colorPrimary</item>
+        <item name="tabTextColor">?attr/colorOnSurfaceVariant</item>
+        <item name="tabSelectedTextColor">?attr/colorOnSurface</item>
+    </style>
+
     <style name="Widget.HeroConfig.BottomNav" parent="Widget.Material3.BottomNavigationView">
-        <item name="android:background">@color/card_surface</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="itemRippleColor">?attr/colorPrimaryContainer</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.HeroConfig.BottomNav.ActiveIndicator</item>
+    </style>
+
+    <style name="Widget.HeroConfig.NavigationRail" parent="Widget.Material3.NavigationRailView">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="itemRippleColor">?attr/colorPrimaryContainer</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.HeroConfig.BottomNav.ActiveIndicator</item>
+        <item name="menuGravity">top</item>
+    </style>
+
+    <style name="Widget.HeroConfig.BottomNav.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">?attr/colorPrimaryContainer</item>
+    </style>
+
+    <style name="Widget.HeroConfig.Chip.Tonal" parent="Widget.Material3.Chip.Suggestion">
+        <item name="chipBackgroundColor">?attr/colorSurfaceContainerHighest</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="chipMinHeight">@dimen/chip_height</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.HeroConfig.Small</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <style name="Widget.HeroConfig.Chip.Accent" parent="Widget.Material3.Chip.Assist">
+        <item name="chipBackgroundColor">?attr/colorPrimaryContainer</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="chipMinHeight">@dimen/chip_height</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.HeroConfig.Small</item>
+        <item name="android:textColor">?attr/colorOnPrimaryContainer</item>
+    </style>
+
+    <style name="Widget.HeroConfig.TextInput" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">?attr/colorSurfaceContainerHigh</item>
+        <item name="boxStrokeColor">?attr/colorOutlineVariant</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.HeroConfig.Medium</item>
+    </style>
+
+    <style name="Widget.HeroConfig.PrimaryButton" parent="Widget.Material3.Button">
+        <item name="android:minHeight">@dimen/save_button_height</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.HeroConfig.Medium</item>
+    </style>
+
+    <style name="Widget.HeroConfig.SecondaryButton" parent="Widget.Material3.Button.ElevatedButton">
+        <item name="android:minHeight">@dimen/save_button_height</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.HeroConfig.Medium</item>
+    </style>
+
+    <style name="Widget.HeroConfig.IconButton.Tonal" parent="Widget.Material3.Button.IconButton.Filled.Tonal">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.HeroConfig.Small</item>
+    </style>
+
+    <style name="Widget.HeroConfig.IconButton.Outlined" parent="Widget.Material3.Button.IconButton">
+        <item name="backgroundTint">?attr/colorSurfaceContainerHighest</item>
+        <item name="strokeColor">?attr/colorOutlineVariant</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.HeroConfig.Small</item>
+    </style>
+
+    <style name="Widget.HeroConfig.ExtendedFab" parent="Widget.Material3.ExtendedFloatingActionButton.Primary">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.HeroConfig.Medium</item>
     </style>
 
 </resources>

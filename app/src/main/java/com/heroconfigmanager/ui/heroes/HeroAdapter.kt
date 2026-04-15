@@ -1,15 +1,17 @@
 package com.heroconfigmanager.ui.heroes
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.heroconfigmanager.R
 import com.heroconfigmanager.data.model.Hero
 import com.heroconfigmanager.databinding.ItemHeroBinding
+import com.heroconfigmanager.ui.common.loadImageWithSkeleton
 
 class HeroAdapter(
     private val onEdit:   (Hero) -> Unit,
@@ -33,23 +35,23 @@ class HeroAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(hero: Hero) {
+            val context = binding.root.context
+
             binding.tvHeroName.text  = hero.hero
             binding.tvHeroTitle.text = hero.heroTitle
 
-            binding.chipSkinsCount.text   = "${hero.skins.size} Skins"
-            binding.chipUpgradesCount.text = "${hero.upgradeSkins.size} Upgrades"
+            binding.chipHeroType.isVisible = hero.heroType.isNotBlank()
+            if (hero.heroType.isNotBlank()) {
+                binding.chipHeroType.text = hero.heroType
+            }
 
-            Glide.with(binding.root)
-                .load(hero.heroSplash)
-                .placeholder(R.color.surface_variant)
-                .into(binding.imgHeroSplash)
+            binding.chipSkinsCount.text = context.getString(R.string.skins_count_format, hero.skins.size)
+            binding.chipUpgradesCount.text = context.getString(R.string.upgrades_count_format, hero.upgradeSkins.size)
 
-            Glide.with(binding.root)
-                .load(hero.heroLogo)
-                .placeholder(R.color.surface_variant)
-                .centerCrop()
-                .into(binding.imgHeroLogo)
+            loadImageWithSkeleton(binding.skeletonHeroSplash, binding.imgHeroSplash, hero.heroSplash)
+            loadImageWithSkeleton(binding.skeletonHeroLogo, binding.imgHeroLogo, hero.heroLogo)
 
+            binding.tvHeroTitle.visibility = if (hero.heroTitle.isBlank()) View.GONE else View.VISIBLE
             binding.btnEditHero.setOnClickListener   { onEdit(hero)   }
             binding.btnDeleteHero.setOnClickListener { onDelete(hero) }
         }

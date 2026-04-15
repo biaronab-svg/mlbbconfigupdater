@@ -2,142 +2,175 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.HeroConfig.HeroCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginBottom="12dp"
+    android:layout_marginHorizontal="@dimen/card_margin_horizontal"
+    android:layout_marginTop="@dimen/card_margin_vertical"
+    android:layout_marginBottom="@dimen/card_margin_vertical"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?attr/selectableItemBackground"
-    style="?attr/materialCardViewElevatedStyle"
-    app:cardCornerRadius="20dp">
+    android:foreground="?attr/selectableItemBackground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- Splash banner -->
-        <ImageView
-            android:id="@+id/imgHeroSplash"
+        <com.faltenreich.skeletonlayout.SkeletonLayout
+            android:id="@+id/skeletonHeroSplash"
             android:layout_width="0dp"
-            android:layout_height="140dp"
-            android:scaleType="centerCrop"
-            android:contentDescription="@string/hero_splash_desc"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_height="@dimen/hero_splash_height"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Gradient overlay -->
+            <ImageView
+                android:id="@+id/imgHeroSplash"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/hero_splash_desc"
+                android:scaleType="centerCrop"
+                tools:src="@tools:sample/backgrounds/scenic" />
+
+        </com.faltenreich.skeletonlayout.SkeletonLayout>
+
         <View
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/hero_gradient_height"
             android:background="@drawable/gradient_bottom_fade"
-            app:layout_constraintBottom_toBottomOf="@id/imgHeroSplash"
-            app:layout_constraintStart_toStartOf="@id/imgHeroSplash"
-            app:layout_constraintEnd_toEndOf="@id/imgHeroSplash" />
+            app:layout_constraintBottom_toBottomOf="@id/skeletonHeroSplash"
+            app:layout_constraintEnd_toEndOf="@id/skeletonHeroSplash"
+            app:layout_constraintStart_toStartOf="@id/skeletonHeroSplash" />
 
-        <!-- Hero logo -->
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imgHeroLogo"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="-32dp"
-            android:scaleType="centerCrop"
-            android:contentDescription="@string/hero_logo_desc"
-            app:shapeAppearanceOverlay="@style/ShapeAppearance.RoundedImage"
-            app:strokeColor="?attr/colorSurface"
-            app:strokeWidth="2dp"
-            app:layout_constraintTop_toBottomOf="@id/imgHeroSplash"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <!-- Hero Name -->
-        <TextView
-            android:id="@+id/tvHeroName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="16dp"
-            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-            android:textColor="?attr/colorOnSurface"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/imgHeroSplash"
-            app:layout_constraintStart_toEndOf="@id/imgHeroLogo"
-            app:layout_constraintEnd_toStartOf="@id/actionContainer" />
-
-        <!-- Hero Title -->
-        <TextView
-            android:id="@+id/tvHeroTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            app:layout_constraintTop_toBottomOf="@id/tvHeroName"
-            app:layout_constraintStart_toStartOf="@id/tvHeroName"
-            app:layout_constraintEnd_toEndOf="@id/tvHeroName" />
-
-        <!-- Chips -->
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipSkinsCount"
-            style="@style/Widget.Material3.Chip.Suggestion"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            android:textSize="11sp"
-            android:clickable="false"
-            android:focusable="false"
-            app:layout_constraintTop_toBottomOf="@id/tvHeroTitle"
-            app:layout_constraintStart_toStartOf="@id/tvHeroName"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipUpgradesCount"
-            style="@style/Widget.Material3.Chip.Suggestion"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:layout_marginStart="8dp"
-            android:textSize="11sp"
-            android:clickable="false"
-            android:focusable="false"
-            app:layout_constraintTop_toTopOf="@id/chipSkinsCount"
-            app:layout_constraintStart_toEndOf="@id/chipSkinsCount" />
-
-        <!-- Action Buttons Container -->
         <LinearLayout
             android:id="@+id/actionContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:layout_marginEnd="12dp"
-            android:orientation="vertical"
             android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@id/imgHeroSplash"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEditHero"
-                style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                style="@style/Widget.HeroConfig.IconButton.Tonal"
+                android:layout_width="@dimen/action_button_size"
+                android:layout_height="@dimen/action_button_size"
                 android:contentDescription="@string/edit_hero"
                 app:icon="@drawable/ic_edit"
-                app:iconSize="20dp" />
+                app:iconSize="@dimen/action_icon_size" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDeleteHero"
-                style="@style/Widget.Material3.Button.IconButton"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginTop="4dp"
+                style="@style/Widget.HeroConfig.IconButton.Outlined"
+                android:layout_width="@dimen/action_button_size"
+                android:layout_height="@dimen/action_button_size"
+                android:layout_marginStart="8dp"
                 android:contentDescription="@string/delete_hero"
                 app:icon="@drawable/ic_delete"
-                app:iconTint="?attr/colorError"
-                app:iconSize="20dp" />
+                app:iconSize="@dimen/action_icon_size"
+                app:iconTint="?attr/colorError" />
 
         </LinearLayout>
+
+        <com.faltenreich.skeletonlayout.SkeletonLayout
+            android:id="@+id/skeletonHeroLogo"
+            android:layout_width="@dimen/hero_logo_size"
+            android:layout_height="@dimen/hero_logo_size"
+            android:layout_marginStart="@dimen/card_inner_padding"
+            android:layout_marginTop="-34dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/skeletonHeroSplash">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imgHeroLogo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/hero_logo_desc"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.RoundedImage"
+                app:strokeColor="?attr/colorSurface"
+                app:strokeWidth="@dimen/hero_logo_stroke"
+                tools:src="@tools:sample/avatars" />
+
+        </com.faltenreich.skeletonlayout.SkeletonLayout>
+
+        <TextView
+            android:id="@+id/tvHeroName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="@dimen/card_inner_padding"
+            android:layout_marginTop="16dp"
+            android:maxLines="2"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+            android:textColor="?attr/colorOnSurface"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/skeletonHeroLogo"
+            app:layout_constraintTop_toBottomOf="@id/skeletonHeroSplash"
+            tools:text="Hero Name" />
+
+        <TextView
+            android:id="@+id/tvHeroTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/card_inner_padding"
+            android:layout_marginTop="4dp"
+            android:maxLines="2"
+            android:textAppearance="@style/TextAppearance.HeroConfig.BodyMuted"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/tvHeroName"
+            app:layout_constraintTop_toBottomOf="@id/tvHeroName"
+            tools:text="A sharper, cleaner Material You card treatment" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipHeroType"
+            style="@style/Widget.HeroConfig.Chip.Tonal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/chip_text_size"
+            tools:text="Marksman" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipSkinsCount"
+            style="@style/Widget.HeroConfig.Chip.Tonal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/chip_text_size"
+            tools:text="12 Skins" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipUpgradesCount"
+            style="@style/Widget.HeroConfig.Chip.Accent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/chip_text_size"
+            tools:text="4 Upgrades" />
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/chipFlow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:layout_marginEnd="@dimen/card_inner_padding"
+            app:constraint_referenced_ids="chipHeroType,chipSkinsCount,chipUpgradesCount"
+            app:flow_horizontalGap="@dimen/chip_spacing"
+            app:flow_verticalGap="@dimen/chip_spacing"
+            app:flow_wrapMode="chain"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/skeletonHeroLogo"
+            app:layout_constraintTop_toBottomOf="@id/tvHeroTitle" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="18dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chipFlow" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

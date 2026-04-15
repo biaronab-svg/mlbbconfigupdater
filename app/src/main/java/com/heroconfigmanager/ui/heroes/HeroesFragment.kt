@@ -70,9 +70,8 @@ class HeroesFragment : Fragment() {
             startActivity(HeroEditorActivity.addIntent(requireContext(), role))
         }
 
-        // Mirror loading state into SwipeRefreshLayout's spinner
-        viewModel.uiState.observe(viewLifecycleOwner) { state ->
-            binding.swipeRefresh.isRefreshing = state is UiState.Loading
+        viewModel.isFetchingConfig.observe(viewLifecycleOwner) { loading ->
+            binding.swipeRefresh.isRefreshing = loading
         }
     }
 

@@ -1,87 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.HeroConfig.SkinCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingVertical="12dp"
-    android:paddingHorizontal="16dp">
+    android:layout_marginBottom="12dp">
 
-    <!-- Drag handle for source skins -->
-    <ImageView
-        android:id="@+id/imgSourceDragHandle"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/ic_drag_handle"
-        android:alpha="0.5"
-        android:contentDescription="Drag"
-        android:padding="2dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/imgAvailableSkinLogo"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="12dp"
-        android:scaleType="centerCrop"
-        android:contentDescription="Source skin logo"
-        app:shapeAppearanceOverlay="@style/ShapeAppearance.RoundedImage"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/imgSourceDragHandle" />
-
-    <TextView
-        android:id="@+id/tvAvailableSkinTitle"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="12dp"
-        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
-        android:textColor="?attr/colorOnSurface"
-        app:layout_constraintTop_toTopOf="@id/imgAvailableSkinLogo"
-        app:layout_constraintStart_toEndOf="@id/imgAvailableSkinLogo"
-        app:layout_constraintEnd_toStartOf="@id/btnEditAvailableSkin"
-        app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintBottom_toTopOf="@id/tvAvailableSkinType" />
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/tvAvailableSkinType"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        android:layout_marginTop="2dp"
-        app:layout_constraintTop_toBottomOf="@id/tvAvailableSkinTitle"
-        app:layout_constraintStart_toStartOf="@id/tvAvailableSkinTitle"
-        app:layout_constraintEnd_toEndOf="@id/tvAvailableSkinTitle"
-        app:layout_constraintBottom_toBottomOf="@id/imgAvailableSkinLogo" />
+        <View
+            android:id="@+id/sourceAccent"
+            android:layout_width="4dp"
+            android:layout_height="0dp"
+            android:background="@android:color/white"
+            android:backgroundTint="?attr/colorSecondaryContainer"
+            app:layout_constraintBottom_toBottomOf="@id/skeletonAvailableSkinLogo"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/skeletonAvailableSkinLogo" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnEditAvailableSkin"
-        style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:contentDescription="Edit source skin"
-        app:icon="@drawable/ic_edit"
-        app:iconSize="18dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btnRemoveAvailableSkin" />
+        <ImageView
+            android:id="@+id/imgSourceDragHandle"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_marginStart="10dp"
+            android:alpha="0.55"
+            android:background="?attr/colorSurfaceContainerHighest"
+            android:contentDescription="@string/drag_to_reorder"
+            android:padding="5dp"
+            android:src="@drawable/ic_drag_handle"
+            app:layout_constraintStart_toEndOf="@id/sourceAccent"
+            app:layout_constraintTop_toTopOf="@id/skeletonAvailableSkinLogo"
+            app:tint="?attr/colorOnSurfaceVariant" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnRemoveAvailableSkin"
-        style="@style/Widget.Material3.Button.IconButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="4dp"
-        android:contentDescription="Remove source skin"
-        app:icon="@drawable/ic_delete"
-        app:iconTint="?attr/colorError"
-        app:iconSize="18dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <com.faltenreich.skeletonlayout.SkeletonLayout
+            android:id="@+id/skeletonAvailableSkinLogo"
+            android:layout_width="@dimen/available_skin_logo_size"
+            android:layout_height="@dimen/available_skin_logo_size"
+            android:layout_marginStart="12dp"
+            app:layout_constraintStart_toEndOf="@id/imgSourceDragHandle"
+            app:layout_constraintTop_toTopOf="parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imgAvailableSkinLogo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/colorSurfaceContainerHighest"
+                android:contentDescription="@string/skin_logo_desc"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.RoundedImage"
+                app:strokeColor="?attr/colorOutlineVariant"
+                app:strokeWidth="1dp"
+                tools:src="@tools:sample/avatars" />
+
+        </com.faltenreich.skeletonlayout.SkeletonLayout>
+
+        <LinearLayout
+            android:id="@+id/actionContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEditAvailableSkin"
+                style="@style/Widget.HeroConfig.IconButton.Tonal"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:contentDescription="@string/edit_skin"
+                app:icon="@drawable/ic_edit"
+                app:iconSize="16dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRemoveAvailableSkin"
+                style="@style/Widget.HeroConfig.IconButton.Outlined"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_marginTop="8dp"
+                android:contentDescription="@string/delete_skin"
+                app:icon="@drawable/ic_delete"
+                app:iconSize="16dp"
+                app:iconTint="?attr/colorError" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvAvailableSkinEyebrow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="12dp"
+            android:text="@string/source_item_label"
+            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+            android:textColor="?attr/colorPrimary"
+            app:layout_constraintEnd_toStartOf="@id/actionContainer"
+            app:layout_constraintStart_toEndOf="@id/skeletonAvailableSkinLogo"
+            app:layout_constraintTop_toTopOf="@id/skeletonAvailableSkinLogo" />
+
+        <TextView
+            android:id="@+id/tvAvailableSkinTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="12dp"
+            android:maxLines="2"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+            android:textColor="?attr/colorOnSurface"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/actionContainer"
+            app:layout_constraintStart_toStartOf="@id/tvAvailableSkinEyebrow"
+            app:layout_constraintTop_toBottomOf="@id/tvAvailableSkinEyebrow"
+            tools:text="Sasuke" />
+
+        <TextView
+            android:id="@+id/tvAvailableSkinMeta"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            app:layout_constraintEnd_toStartOf="@id/actionContainer"
+            app:layout_constraintStart_toStartOf="@id/tvAvailableSkinEyebrow"
+            app:layout_constraintTop_toBottomOf="@id/tvAvailableSkinTitle"
+            tools:text="drive.google.com" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipAvailableSkinType"
+            style="@style/Widget.HeroConfig.Chip.Tonal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/chip_text_size"
+            tools:text="Naruto" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipAvailableZip"
+            style="@style/Widget.HeroConfig.Chip.Accent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/chip_text_size"
+            tools:text="ZIP Ready" />
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/sourceChipFlow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:constraint_referenced_ids="chipAvailableSkinType,chipAvailableZip"
+            app:flow_horizontalGap="@dimen/chip_spacing"
+            app:flow_verticalGap="@dimen/chip_spacing"
+            app:flow_wrapMode="chain"
+            app:layout_constraintEnd_toStartOf="@id/actionContainer"
+            app:layout_constraintStart_toStartOf="@id/tvAvailableSkinEyebrow"
+            app:layout_constraintTop_toBottomOf="@id/tvAvailableSkinMeta" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="4dp"
+            app:layout_constraintBottom_toBottomOf="@id/skeletonAvailableSkinLogo"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sourceChipFlow" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

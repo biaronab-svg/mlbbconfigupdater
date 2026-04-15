@@ -1,6 +1,7 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -14,7 +15,7 @@ android {
         versionCode = 1
         versionName = "1.0.9"
 
-        val properties = java.util.Properties()
+        val properties = Properties()
         val propertiesFile = project.rootProject.file("local.properties")
         if (propertiesFile.exists()) {
             properties.load(propertiesFile.inputStream())
@@ -35,11 +36,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         viewBinding = true
@@ -69,4 +67,6 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.coroutines.android)
     implementation(libs.glide)
+    implementation(libs.mpandroidchart)
+    implementation(libs.skeletonlayout)
 }

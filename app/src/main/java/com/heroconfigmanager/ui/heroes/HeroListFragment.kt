@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.faltenreich.skeletonlayout.Skeleton
+import com.faltenreich.skeletonlayout.applySkeleton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.heroconfigmanager.R
 import com.heroconfigmanager.data.model.Hero
 import com.heroconfigmanager.databinding.FragmentHeroListBinding
 import com.heroconfigmanager.ui.SharedViewModel
@@ -24,8 +26,16 @@ class HeroListFragment : Fragment() {
     private lateinit var viewModel: SharedViewModel
     private lateinit var adapter: HeroAdapter
     private lateinit var role: String
+    private var currentHeroes: List<Hero> = emptyList()
+    private var isFetchingConfig: Boolean = false
+    private var hasFinishedInitialLoad: Boolean = false
+    private var skeleton: Skeleton? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         _binding = FragmentHeroListBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -33,31 +43,53 @@ class HeroListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         role = arguments?.getString(ARG_ROLE) ?: return
-        
+
         viewModel = androidx.lifecycle.ViewModelProvider(
             (requireActivity().application as com.heroconfigmanager.HeroConfigApp).appViewModelStore,
             androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)
         )[SharedViewModel::class.java]
 
         adapter = HeroAdapter(
-            onEdit   = { hero -> openEditor(hero) },
+            onEdit = { hero -> openEditor(hero) },
             onDelete = { hero -> confirmDelete(hero) }
         )
         binding.heroRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.heroRecyclerView.adapter = adapter
+        skeleton = binding.heroRecyclerView.applySkeleton(R.layout.item_hero)
 
         viewModel.config.observe(viewLifecycleOwner) { config ->
-            val heroes = config.roles.heroesFor(role)
-            adapter.submitList(heroes)
-            binding.emptyState.visibility = if (heroes.isEmpty()) View.VISIBLE else View.GONE
-            binding.heroRecyclerView.visibility = if (heroes.isEmpty()) View.GONE else View.VISIBLE
+            currentHeroes = config.roles.heroesFor(role)
+            adapter.submitList(currentHeroes)
+            renderState()
+        }
+
+        viewModel.isFetchingConfig.observe(viewLifecycleOwner) { loading ->
+            isFetchingConfig = loading
+            renderState()
+        }
+
+        viewModel.hasFinishedInitialLoad.observe(viewLifecycleOwner) { finished ->
+            hasFinishedInitialLoad = finished
+            renderState()
         }
     }
 
+    private fun renderState() {
+        val showSkeleton = isFetchingConfig && !hasFinishedInitialLoad && currentHeroes.isEmpty()
+        if (showSkeleton) {
+            binding.heroRecyclerView.visibility = View.VISIBLE
+            binding.emptyState.visibility = View.GONE
+            skeleton?.showSkeleton()
+            return
+        }
+
+        skeleton?.showOriginal()
+        val showEmpty = currentHeroes.isEmpty()
+        binding.emptyState.visibility = if (showEmpty) View.VISIBLE else View.GONE
+        binding.heroRecyclerView.visibility = if (showEmpty) View.GONE else View.VISIBLE
+    }
+
     private fun openEditor(hero: Hero) {
-        // Use the factory that serialises the full Hero object into the Intent,
-        // so HeroEditorActivity can pre-populate the editor regardless of
-        // whether the SharedViewModel has already loaded the config.
         startActivity(HeroEditorActivity.editIntent(requireContext(), role, hero))
     }
 
@@ -72,6 +104,7 @@ class HeroListFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        skeleton = null
         _binding = null
     }
 }

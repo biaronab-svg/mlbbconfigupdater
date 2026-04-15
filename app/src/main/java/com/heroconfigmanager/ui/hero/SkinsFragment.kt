@@ -11,13 +11,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.heroconfigmanager.R
 import com.heroconfigmanager.data.model.Skin
 import com.heroconfigmanager.databinding.DialogSkinEditorBinding
 import com.heroconfigmanager.databinding.FragmentEditorSkinsBinding
 import com.heroconfigmanager.databinding.ItemSkinBinding
+import com.heroconfigmanager.ui.common.loadImageWithSkeleton
 
 class SkinsFragment : Fragment() {
 
@@ -26,8 +26,13 @@ class SkinsFragment : Fragment() {
     private lateinit var vm: HeroEditorViewModel
     private lateinit var adapter: SkinAdapter
     private lateinit var touchHelper: ItemTouchHelper
+    private var hasAnimatedList = false
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         _binding = FragmentEditorSkinsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -37,48 +42,29 @@ class SkinsFragment : Fragment() {
         vm = ViewModelProvider(requireActivity())[HeroEditorViewModel::class.java]
 
         adapter = SkinAdapter(
-            onEdit        = { index, skin -> showSkinDialog(index, skin) },
-            onDelete      = { index -> vm.deleteSkin(index) },
-            onStartDrag   = { holder -> touchHelper.startDrag(holder) }
+            onEdit = { index, skin -> showSkinDialog(index, skin) },
+            onDelete = { index -> vm.deleteSkin(index) },
+            onStartDrag = { holder -> touchHelper.startDrag(holder) }
         )
 
-        // Drag-and-drop via long-press OR handle touch
-        val callback = object : ItemTouchHelper.SimpleCallback(
-            ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0
-        ) {
-            override fun onMove(rv: RecyclerView, from: RecyclerView.ViewHolder, to: RecyclerView.ViewHolder): Boolean {
-                val fromPos = from.bindingAdapterPosition
-                val toPos   = to.bindingAdapterPosition
-                adapter.notifyItemMoved(fromPos, toPos)
-                vm.reorderSkins(fromPos, toPos)
-                return true
-            }
-            override fun onSwiped(holder: RecyclerView.ViewHolder, dir: Int) = Unit
-            override fun onSelectedChanged(holder: RecyclerView.ViewHolder?, actionState: Int) {
-                super.onSelectedChanged(holder, actionState)
-                if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
-                    holder?.itemView?.let {
-                        it.animate().scaleX(1.05f).scaleY(1.05f).alpha(0.85f).translationZ(10f).setDuration(150).start()
-                        it.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS)
-                    }
-                }
-            }
-            override fun clearView(rv: RecyclerView, holder: RecyclerView.ViewHolder) {
-                super.clearView(rv, holder)
-                holder.itemView.animate().scaleX(1f).scaleY(1f).alpha(1f).translationZ(0f).setDuration(150).start()
-            }
-        }
+        val callback = ReorderItemTouchHelperCallback(
+            onMoveItem = { fromPos, toPos -> adapter.moveItem(fromPos, toPos) },
+            onDragReleased = { vm.setSkins(adapter.snapshot()) }
+        )
         touchHelper = ItemTouchHelper(callback)
         touchHelper.attachToRecyclerView(binding.skinsRecyclerView)
 
         binding.skinsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.skinsRecyclerView.adapter = adapter
 
-        vm.skins.observe(viewLifecycleOwner) {
-            adapter.submitList(it.toList())
-            binding.skinsRecyclerView.startAnimation(
-                AnimationUtils.loadAnimation(requireContext(), R.anim.fade_in)
-            )
+        vm.skins.observe(viewLifecycleOwner) { skins ->
+            adapter.replaceItems(skins.toList())
+            if (!hasAnimatedList) {
+                hasAnimatedList = true
+                binding.skinsRecyclerView.startAnimation(
+                    AnimationUtils.loadAnimation(requireContext(), R.anim.fade_in)
+                )
+            }
         }
 
         binding.fabAddSkin.setOnClickListener { showSkinDialog(-1, null) }
@@ -98,9 +84,9 @@ class SkinsFragment : Fragment() {
             .setPositiveButton("Save") { _, _ ->
                 val skin = Skin(
                     skinTitle = dialogBinding.etSkinTitle.text.toString().trim(),
-                    skinType  = dialogBinding.etSkinType.text.toString().trim(),
-                    skinLogo  = dialogBinding.etSkinLogo.text.toString().trim(),
-                    zipUrl    = dialogBinding.etZipUrl.text.toString().trim()
+                    skinType = dialogBinding.etSkinType.text.toString().trim(),
+                    skinLogo = dialogBinding.etSkinLogo.text.toString().trim(),
+                    zipUrl = dialogBinding.etZipUrl.text.toString().trim()
                 )
                 if (index == -1) vm.addSkin(skin) else vm.updateSkin(index, skin)
             }
@@ -115,44 +101,69 @@ class SkinsFragment : Fragment() {
 }
 
 class SkinAdapter(
-    private val onEdit:      (Int, Skin) -> Unit,
-    private val onDelete:    (Int) -> Unit,
+    private val onEdit: (Int, Skin) -> Unit,
+    private val onDelete: (Int) -> Unit,
     private val onStartDrag: (RecyclerView.ViewHolder) -> Unit,
-) : androidx.recyclerview.widget.ListAdapter<Skin, SkinAdapter.SkinVH>(
-    object : androidx.recyclerview.widget.DiffUtil.ItemCallback<Skin>() {
-        override fun areItemsTheSame(a: Skin, b: Skin) = a.skinTitle == b.skinTitle
-        override fun areContentsTheSame(a: Skin, b: Skin) = a == b
+) : RecyclerView.Adapter<SkinAdapter.SkinVH>() {
+
+    private val items = mutableListOf<Skin>()
+
+    fun replaceItems(updated: List<Skin>) {
+        items.clear()
+        items.addAll(updated)
+        notifyDataSetChanged()
     }
-) {
+
+    fun moveItem(from: Int, to: Int): Boolean {
+        if (from !in items.indices || to !in items.indices || from == to) {
+            return false
+        }
+        val moved = items.removeAt(from)
+        items.add(to, moved)
+        notifyItemMoved(from, to)
+        return true
+    }
+
+    fun snapshot(): List<Skin> = items.toList()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         SkinVH(ItemSkinBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
+    override fun getItemCount(): Int = items.size
+
     override fun onBindViewHolder(holder: SkinVH, position: Int) {
-        holder.bind(getItem(position), position)
-        // Staggered slide-in animation
-        val anim = android.view.animation.AnimationUtils.loadAnimation(holder.itemView.context, com.heroconfigmanager.R.anim.slide_in_right)
+        holder.bind(items[position])
+        val anim = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.slide_in_right)
         anim.startOffset = (position * 30L).coerceAtMost(200L)
         holder.itemView.startAnimation(anim)
     }
 
-    inner class SkinVH(private val b: ItemSkinBinding) :
-        androidx.recyclerview.widget.RecyclerView.ViewHolder(b.root) {
+    inner class SkinVH(private val binding: ItemSkinBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(skin: Skin, index: Int) {
-            b.tvSkinTitle.text  = skin.skinTitle
-            b.chipSkinType.text = skin.skinType.ifBlank { "—" }
-            Glide.with(b.root)
-                .load(skin.skinLogo)
-                .placeholder(R.color.surface_variant)
-                .into(b.imgSkinLogo)
+        fun bind(skin: Skin) {
+            binding.tvSkinTitle.text = skin.skinTitle
+            binding.chipSkinType.text = skin.skinType.ifBlank { "-" }
+            loadImageWithSkeleton(binding.skeletonSkinLogo, binding.imgSkinLogo, skin.skinLogo)
 
-            b.btnEditSkin.setOnClickListener   { onEdit(index, skin) }
-            b.btnDeleteSkin.setOnClickListener { onDelete(index) }
-
-            // Drag starts on touch-down of the handle
-            b.imgDragHandle.setOnTouchListener { _, event ->
-                if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+            binding.btnEditSkin.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onEdit(position, items[position])
+                }
+            }
+            binding.btnDeleteSkin.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onDelete(position)
+                }
+            }
+            binding.imgDragHandle.setOnTouchListener { _, event ->
+                if (event.actionMasked == MotionEvent.ACTION_DOWN &&
+                    bindingAdapterPosition != RecyclerView.NO_POSITION
+                ) {
                     onStartDrag(this)
+                    return@setOnTouchListener true
                 }
                 false
             }

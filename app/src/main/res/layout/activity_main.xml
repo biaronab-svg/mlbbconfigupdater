@@ -1,78 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:background="?attr/colorSurface">
 
-    <!-- ── AppBar ─────────────────────────────────────────────────── -->
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        style="@style/Widget.Material3.AppBarLayout">
-
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:id="@+id/collapsingToolbar"
-            android:layout_width="match_parent"
-            android:layout_height="172dp"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-            app:titleCollapseMode="fade"
-            app:expandedTitleMarginStart="24dp"
-            app:expandedTitleMarginBottom="28dp"
-            app:title="@string/app_name"
-            app:expandedTitleTextAppearance="@style/TextAppearance.Material3.HeadlineLarge"
-            style="@style/Widget.Material3.CollapsingToolbar.Large">
-
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
-                style="@style/Widget.Material3.Toolbar" />
-
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <!-- ── Main content ───────────────────────────────────────────── -->
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/nav_host_fragment"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/nav_graph"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-    <!-- ── Bottom Navigation ─────────────────────────────────────── -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_nav"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        style="@style/Widget.Material3.BottomNavigationView"
-        app:menu="@menu/bottom_nav_menu"
-        app:labelVisibilityMode="labeled"
-        app:itemIconSize="24dp"
-        android:background="?attr/colorSurface"
-        app:elevation="8dp" />
-
-    <!-- ── FAB — anchored to BottomNav ───────────────────────────── -->
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabAddHeroMain"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/railCard"
+        style="@style/Widget.HeroConfig.SurfaceCard"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/add_hero"
-        android:contentDescription="@string/add_hero"
-        app:icon="@drawable/ic_add"
-        app:layout_anchor="@id/bottom_nav"
-        app:layout_anchorGravity="top|end"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="24dp"
-        style="@style/Widget.Material3.ExtendedFloatingActionButton.Primary" />
+        android:layout_height="0dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <com.google.android.material.navigationrail.NavigationRailView
+            android:id="@+id/navigationRail"
+            style="@style/Widget.HeroConfig.NavigationRail"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:paddingVertical="12dp"
+            app:headerLayout="@layout/view_navigation_rail_header"
+            app:menu="@menu/bottom_nav_menu" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/contentCoordinator"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/railCard"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            app:elevation="0dp">
+
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/collapsingToolbar"
+                style="@style/Widget.Material3.CollapsingToolbar.Large"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/collapsing_toolbar_height"
+                android:background="?attr/colorSurface"
+                app:contentScrim="?attr/colorSurface"
+                app:expandedTitleMarginBottom="@dimen/expanded_title_margin_bottom"
+                app:expandedTitleMarginStart="@dimen/expanded_title_margin_start"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+                app:title="@string/app_name"
+                app:titleCollapseMode="fade">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/gradient_bottom_fade" />
+
+                <com.google.android.material.appbar.MaterialToolbar
+                    android:id="@+id/toolbar"
+                    style="@style/Widget.HeroConfig.Toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:layout_collapseMode="pin" />
+
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/nav_host_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:defaultNavHost="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:navGraph="@navigation/nav_graph" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/bottomNavCard"
+            style="@style/Widget.HeroConfig.SurfaceCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginHorizontal="@dimen/bottom_nav_margin_horizontal"
+            android:layout_marginBottom="@dimen/bottom_nav_margin_bottom">
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottomNav"
+                style="@style/Widget.HeroConfig.BottomNav"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:padding="@dimen/bottom_nav_inner_padding"
+                app:elevation="0dp"
+                app:itemIconSize="24dp"
+                app:labelVisibilityMode="labeled"
+                app:menu="@menu/bottom_nav_menu" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fabAddHeroMain"
+            style="@style/Widget.HeroConfig.ExtendedFab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/fab_margin_end"
+            android:layout_marginBottom="@dimen/fab_margin_bottom"
+            android:contentDescription="@string/add_hero"
+            android:text="@string/add_hero"
+            app:icon="@drawable/ic_add" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

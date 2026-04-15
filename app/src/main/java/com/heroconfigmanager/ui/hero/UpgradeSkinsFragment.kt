@@ -1,18 +1,22 @@
 package com.heroconfigmanager.ui.hero
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.AnimationUtils
+import android.widget.FrameLayout
+import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.heroconfigmanager.R
 import com.heroconfigmanager.data.model.AvailableSkin
 import com.heroconfigmanager.data.model.Skin
@@ -21,6 +25,7 @@ import com.heroconfigmanager.databinding.DialogUpgradeSkinEditorBinding
 import com.heroconfigmanager.databinding.FragmentEditorSkinsBinding
 import com.heroconfigmanager.databinding.ItemAvailableSkinBinding
 import com.heroconfigmanager.databinding.ItemUpgradeSkinBinding
+import com.heroconfigmanager.ui.common.loadImageWithSkeleton
 
 class UpgradeSkinsFragment : Fragment() {
 
@@ -30,7 +35,11 @@ class UpgradeSkinsFragment : Fragment() {
     private lateinit var adapter: UpgradeSkinAdapter
     private lateinit var touchHelper: ItemTouchHelper
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         _binding = FragmentEditorSkinsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -40,180 +49,201 @@ class UpgradeSkinsFragment : Fragment() {
         vm = ViewModelProvider(requireActivity())[HeroEditorViewModel::class.java]
 
         adapter = UpgradeSkinAdapter(
-            onEdit      = { index, u -> showUpgradeDialog(index, u) },
-            onDelete    = { index -> vm.deleteUpgradeSkin(index) },
+            onEdit = { index, item -> showUpgradeSheet(index, item) },
+            onDelete = { index -> vm.deleteUpgradeSkin(index) },
             onStartDrag = { holder -> touchHelper.startDrag(holder) }
         )
 
-        val callback = object : ItemTouchHelper.SimpleCallback(
-            ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0
-        ) {
-            override fun onMove(rv: RecyclerView, from: RecyclerView.ViewHolder, to: RecyclerView.ViewHolder): Boolean {
-                val fromPos = from.bindingAdapterPosition
-                val toPos   = to.bindingAdapterPosition
-                adapter.notifyItemMoved(fromPos, toPos)
-                vm.reorderUpgradeSkins(fromPos, toPos)
-                return true
-            }
-            override fun onSwiped(holder: RecyclerView.ViewHolder, dir: Int) = Unit
-            override fun onSelectedChanged(holder: RecyclerView.ViewHolder?, actionState: Int) {
-                super.onSelectedChanged(holder, actionState)
-                if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
-                    holder?.itemView?.let {
-                        it.animate().scaleX(1.05f).scaleY(1.05f).alpha(0.85f).translationZ(10f).setDuration(150).start()
-                        it.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS)
-                    }
-                }
-            }
-            override fun clearView(rv: RecyclerView, holder: RecyclerView.ViewHolder) {
-                super.clearView(rv, holder)
-                holder.itemView.animate().scaleX(1f).scaleY(1f).alpha(1f).translationZ(0f).setDuration(150).start()
-            }
-        }
+        val callback = ReorderItemTouchHelperCallback(
+            onMoveItem = { fromPos, toPos -> adapter.moveItem(fromPos, toPos) },
+            onDragReleased = { vm.setUpgradeSkins(adapter.snapshot()) }
+        )
+
         touchHelper = ItemTouchHelper(callback)
         touchHelper.attachToRecyclerView(binding.skinsRecyclerView)
 
         binding.skinsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.skinsRecyclerView.adapter = adapter
 
-        vm.upgradeSkins.observe(viewLifecycleOwner) { adapter.submitList(it.toList()) }
+        vm.upgradeSkins.observe(viewLifecycleOwner) { adapter.replaceItems(it.toList()) }
 
         binding.fabAddSkin.text = getString(R.string.add_upgrade_skin)
-        binding.fabAddSkin.setOnClickListener { showUpgradeDialog(-1, null) }
+        binding.fabAddSkin.setOnClickListener { showUpgradeSheet(-1, null) }
     }
 
-    private fun showUpgradeDialog(index: Int, existing: UpgradeSkin?) {
-        // Mutable working copy of source skins so user can add/remove before saving
-        val sourceSkins = (existing?.availableSkins?.toMutableList()) ?: mutableListOf()
-        val dialogBinding = DialogUpgradeSkinEditorBinding.inflate(layoutInflater)
+    @Suppress("DEPRECATION")
+    private fun showUpgradeSheet(index: Int, existing: UpgradeSkin?) {
+        val sourceSkins = existing?.availableSkins?.toMutableList() ?: mutableListOf()
+        val sheetBinding = DialogUpgradeSkinEditorBinding.inflate(layoutInflater)
+        val dialog = BottomSheetDialog(requireContext(), R.style.ThemeOverlay_HeroConfig_BottomSheetDialog)
         var editingSourceIndex = -1
 
-        // Pre-fill outer fields
-        existing?.let {
-            dialogBinding.etUpgradeSkinTitle.setText(it.skinTitle)
-            dialogBinding.etUpgradeSkinType.setText(it.skinType)
-            dialogBinding.etUpgradeSkinLogo.setText(it.skinLogo)
+        dialog.setContentView(sheetBinding.root)
+        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        dialog.behavior.skipCollapsed = true
+        dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        dialog.setOnShowListener {
+            dialog.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)
+                ?.let { bottomSheet ->
+                    bottomSheet.layoutParams = bottomSheet.layoutParams.apply {
+                        height = ViewGroup.LayoutParams.MATCH_PARENT
+                    }
+                    dialog.behavior.isDraggable = true
+                    dialog.behavior.expandedOffset = 0
+                    dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                }
         }
 
-        // Source skins inline adapter
-        lateinit var sourceAdapter: AvailableSkinAdapter
-        sourceAdapter = AvailableSkinAdapter(
-            items     = sourceSkins,
-            onEdit    = { pos, skin ->
-                editingSourceIndex = pos
-                dialogBinding.etSourceSkinTitle.setText(skin.skinTitle)
-                dialogBinding.etSourceSkinType.setText(skin.skinType)
-                dialogBinding.etSourceSkinLogo.setText(skin.skinLogo)
-                dialogBinding.etSourceSkinZip.setText(skin.zipUrl)
-                dialogBinding.btnConfirmSource.text = "Update"
-                dialogBinding.cardAddSource.visibility = View.VISIBLE
-                dialogBinding.btnAddSourceSkin.isEnabled = false
-            },
-            onRemove  = { pos ->
-                sourceSkins.removeAt(pos)
-                sourceAdapter.notifyItemRemoved(pos)
-                updateSourceEmptyState(dialogBinding, sourceSkins)
-            },
-            onStartDrag = { /* long-press already handled by ItemTouchHelper */ }
+        sheetBinding.tvUpgradeSheetTitle.text = getString(
+            if (existing == null) R.string.add_upgrade_skin else R.string.edit_upgrade_skin
         )
 
-        dialogBinding.rvSourceSkins.layoutManager = LinearLayoutManager(requireContext())
-        dialogBinding.rvSourceSkins.adapter = sourceAdapter
-
-        // ItemTouchHelper for source skins inside the dialog
-        val sourceCallback = object : ItemTouchHelper.SimpleCallback(
-            ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0
-        ) {
-            override fun onMove(rv: RecyclerView, from: RecyclerView.ViewHolder, to: RecyclerView.ViewHolder): Boolean {
-                val f = from.bindingAdapterPosition; val t = to.bindingAdapterPosition
-                val item = sourceSkins.removeAt(f)
-                sourceSkins.add(t, item)
-                sourceAdapter.notifyItemMoved(f, t)
-                return true
-            }
-            override fun onSwiped(h: RecyclerView.ViewHolder, d: Int) = Unit
-            override fun onSelectedChanged(holder: RecyclerView.ViewHolder?, actionState: Int) {
-                super.onSelectedChanged(holder, actionState)
-                if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
-                    holder?.itemView?.let {
-                        it.animate().scaleX(1.05f).scaleY(1.05f).alpha(0.85f).translationZ(10f).setDuration(150).start()
-                        it.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS)
-                    }
-                }
-            }
-            override fun clearView(rv: RecyclerView, holder: RecyclerView.ViewHolder) {
-                super.clearView(rv, holder)
-                holder.itemView.animate().scaleX(1f).scaleY(1f).alpha(1f).translationZ(0f).setDuration(150).start()
-            }
+        existing?.let {
+            sheetBinding.etUpgradeSkinTitle.setText(it.skinTitle)
+            sheetBinding.etUpgradeSkinType.setText(it.skinType)
+            sheetBinding.etUpgradeSkinLogo.setText(it.skinLogo)
         }
-        ItemTouchHelper(sourceCallback).attachToRecyclerView(dialogBinding.rvSourceSkins)
 
-        updateSourceEmptyState(dialogBinding, sourceSkins)
+        lateinit var sourceAdapter: AvailableSkinAdapter
+        lateinit var sourceTouchHelper: ItemTouchHelper
+        sourceAdapter = AvailableSkinAdapter(
+            items = sourceSkins,
+            onEdit = { pos, skin ->
+                editingSourceIndex = pos
+                sheetBinding.etSourceSkinTitle.setText(skin.skinTitle)
+                sheetBinding.etSourceSkinType.setText(skin.skinType)
+                sheetBinding.etSourceSkinLogo.setText(skin.skinLogo)
+                sheetBinding.etSourceSkinZip.setText(skin.zipUrl)
+                sheetBinding.btnConfirmSource.text = getString(R.string.save)
+                showSourceEditor(sheetBinding)
+            },
+            onRemove = { pos ->
+                sourceSkins.removeAt(pos)
+                sourceAdapter.notifyItemRemoved(pos)
+                updateSourceSectionState(sheetBinding, sourceSkins)
+            },
+            onStartDrag = { holder -> sourceTouchHelper.startDrag(holder) }
+        )
 
-        // Show/hide the inline add form
-        dialogBinding.btnAddSourceSkin.setOnClickListener {
-            editingSourceIndex = -1
-            clearSourceForm(dialogBinding)
-            dialogBinding.btnConfirmSource.text = "Add"
-            dialogBinding.cardAddSource.visibility = View.VISIBLE
-            dialogBinding.btnAddSourceSkin.isEnabled = false
-        }
-        dialogBinding.btnCancelSource.setOnClickListener {
-            editingSourceIndex = -1
-            clearSourceForm(dialogBinding)
-            dialogBinding.cardAddSource.visibility = View.GONE
-            dialogBinding.btnAddSourceSkin.isEnabled = true
-        }
-        dialogBinding.btnConfirmSource.setOnClickListener {
-            val title = dialogBinding.etSourceSkinTitle.text.toString().trim()
-            val type  = dialogBinding.etSourceSkinType.text.toString().trim()
-            val logo  = dialogBinding.etSourceSkinLogo.text.toString().trim()
-            val zip   = dialogBinding.etSourceSkinZip.text.toString().trim()
-            if (title.isNotBlank()) {
-                val skin = Skin(skinTitle = title, skinType = type, skinLogo = logo, zipUrl = zip)
-                if (editingSourceIndex == -1) {
-                    sourceSkins.add(skin)
-                    sourceAdapter.notifyItemInserted(sourceSkins.lastIndex)
+        sheetBinding.rvSourceSkins.layoutManager = LinearLayoutManager(requireContext())
+        sheetBinding.rvSourceSkins.adapter = sourceAdapter
+
+        val sourceCallback = ReorderItemTouchHelperCallback(
+            onMoveItem = { fromPos, toPos ->
+                if (fromPos !in sourceSkins.indices || toPos !in sourceSkins.indices || fromPos == toPos) {
+                    false
                 } else {
-                    sourceSkins[editingSourceIndex] = skin
-                    sourceAdapter.notifyItemChanged(editingSourceIndex)
-                    editingSourceIndex = -1
+                    val item = sourceSkins.removeAt(fromPos)
+                    sourceSkins.add(toPos, item)
+                    sourceAdapter.notifyItemMoved(fromPos, toPos)
+                    true
                 }
-                updateSourceEmptyState(dialogBinding, sourceSkins)
-                clearSourceForm(dialogBinding)
-                dialogBinding.cardAddSource.visibility = View.GONE
-                dialogBinding.btnAddSourceSkin.isEnabled = true
-            } else {
-                dialogBinding.etSourceSkinTitle.error = "Title required"
             }
+        )
+        sourceTouchHelper = ItemTouchHelper(sourceCallback)
+        sourceTouchHelper.attachToRecyclerView(sheetBinding.rvSourceSkins)
+
+        updateSourceSectionState(sheetBinding, sourceSkins)
+
+        sheetBinding.btnAddSourceSkin.setOnClickListener {
+            editingSourceIndex = -1
+            clearSourceForm(sheetBinding)
+            sheetBinding.btnConfirmSource.text = getString(R.string.add)
+            showSourceEditor(sheetBinding)
         }
 
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(if (existing == null) "Add Upgrade Skin" else "Edit Upgrade Skin")
-            .setView(dialogBinding.root)
-            .setPositiveButton("Save") { _, _ ->
-                val u = UpgradeSkin(
-                    skinTitle      = dialogBinding.etUpgradeSkinTitle.text.toString().trim(),
-                    skinType       = dialogBinding.etUpgradeSkinType.text.toString().trim(),
-                    skinLogo       = dialogBinding.etUpgradeSkinLogo.text.toString().trim(),
-                    availableSkins = sourceSkins.toList()
-                )
-                if (index == -1) vm.addUpgradeSkin(u) else vm.updateUpgradeSkin(index, u)
+        sheetBinding.btnCancelSource.setOnClickListener {
+            editingSourceIndex = -1
+            clearSourceForm(sheetBinding)
+            hideSourceEditor(sheetBinding)
+        }
+
+        sheetBinding.btnConfirmSource.setOnClickListener {
+            val title = sheetBinding.etSourceSkinTitle.text.toString().trim()
+            val type = sheetBinding.etSourceSkinType.text.toString().trim()
+            val logo = sheetBinding.etSourceSkinLogo.text.toString().trim()
+            val zip = sheetBinding.etSourceSkinZip.text.toString().trim()
+
+            if (title.isBlank()) {
+                sheetBinding.etSourceSkinTitle.error = "Title required"
+                return@setOnClickListener
             }
-            .setNegativeButton("Cancel", null)
-            .show()
+
+            val skin = Skin(skinTitle = title, skinType = type, skinLogo = logo, zipUrl = zip)
+            if (editingSourceIndex == -1) {
+                sourceSkins.add(skin)
+                sourceAdapter.notifyItemInserted(sourceSkins.lastIndex)
+            } else {
+                sourceSkins[editingSourceIndex] = skin
+                sourceAdapter.notifyItemChanged(editingSourceIndex)
+                editingSourceIndex = -1
+            }
+            updateSourceSectionState(sheetBinding, sourceSkins)
+            clearSourceForm(sheetBinding)
+            hideSourceEditor(sheetBinding)
+        }
+
+        sheetBinding.btnCloseUpgradeSheet.setOnClickListener { dialog.dismiss() }
+        sheetBinding.btnCancelUpgradeSheet.setOnClickListener { dialog.dismiss() }
+        sheetBinding.btnSaveUpgradeSheet.setOnClickListener {
+            val title = sheetBinding.etUpgradeSkinTitle.text.toString().trim()
+            if (title.isBlank()) {
+                sheetBinding.etUpgradeSkinTitle.error = "Title required"
+                return@setOnClickListener
+            }
+
+            val item = UpgradeSkin(
+                skinTitle = title,
+                skinType = sheetBinding.etUpgradeSkinType.text.toString().trim(),
+                skinLogo = sheetBinding.etUpgradeSkinLogo.text.toString().trim(),
+                availableSkins = sourceSkins.toList()
+            )
+            if (index == -1) vm.addUpgradeSkin(item) else vm.updateUpgradeSkin(index, item)
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
-    private fun updateSourceEmptyState(b: DialogUpgradeSkinEditorBinding, list: List<*>) {
-        b.tvSourceSkinsEmpty.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
+    private fun updateSourceSectionState(
+        binding: DialogUpgradeSkinEditorBinding,
+        list: List<*>,
+    ) {
+        binding.tvSourceSkinsEmpty.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
+        binding.chipSourceCountSummary.text = binding.root.context.getString(
+            R.string.sources_count_format,
+            list.size
+        )
     }
 
-    private fun clearSourceForm(b: DialogUpgradeSkinEditorBinding) {
-        b.etSourceSkinTitle.text?.clear()
-        b.etSourceSkinType.text?.clear()
-        b.etSourceSkinLogo.text?.clear()
-        b.etSourceSkinZip.text?.clear()
-        b.etSourceSkinTitle.error = null
+    private fun showSourceEditor(binding: DialogUpgradeSkinEditorBinding) {
+        binding.cardAddSource.visibility = View.VISIBLE
+        binding.btnAddSourceSkin.isEnabled = false
+        binding.sheetScroll.post {
+            binding.cardAddSource.doOnLayout {
+                val extraOffset = binding.root.resources.getDimensionPixelSize(R.dimen.field_spacing) * 3
+                val targetScroll = (
+                    binding.cardAddSource.bottom -
+                        binding.sheetScroll.height +
+                        binding.sheetScroll.paddingBottom +
+                        extraOffset
+                    ).coerceAtLeast(binding.cardAddSource.top - extraOffset)
+                binding.sheetScroll.smoothScrollTo(0, targetScroll)
+            }
+        }
+    }
+
+    private fun hideSourceEditor(binding: DialogUpgradeSkinEditorBinding) {
+        binding.cardAddSource.visibility = View.GONE
+        binding.btnAddSourceSkin.isEnabled = true
+    }
+
+    private fun clearSourceForm(binding: DialogUpgradeSkinEditorBinding) {
+        binding.etSourceSkinTitle.text?.clear()
+        binding.etSourceSkinType.text?.clear()
+        binding.etSourceSkinLogo.text?.clear()
+        binding.etSourceSkinZip.text?.clear()
+        binding.etSourceSkinTitle.error = null
     }
 
     override fun onDestroyView() {
@@ -222,46 +252,88 @@ class UpgradeSkinsFragment : Fragment() {
     }
 }
 
-// ── Adapters ──────────────────────────────────────────────────────────────────
-
 class UpgradeSkinAdapter(
-    private val onEdit:      (Int, UpgradeSkin) -> Unit,
-    private val onDelete:    (Int) -> Unit,
+    private val onEdit: (Int, UpgradeSkin) -> Unit,
+    private val onDelete: (Int) -> Unit,
     private val onStartDrag: (RecyclerView.ViewHolder) -> Unit,
-) : androidx.recyclerview.widget.ListAdapter<UpgradeSkin, UpgradeSkinAdapter.VH>(
-    object : androidx.recyclerview.widget.DiffUtil.ItemCallback<UpgradeSkin>() {
-        override fun areItemsTheSame(a: UpgradeSkin, b: UpgradeSkin) = a.skinTitle == b.skinTitle
-        override fun areContentsTheSame(a: UpgradeSkin, b: UpgradeSkin) = a == b
+) : RecyclerView.Adapter<UpgradeSkinAdapter.VH>() {
+
+    private val items = mutableListOf<UpgradeSkin>()
+
+    fun replaceItems(updated: List<UpgradeSkin>) {
+        items.clear()
+        items.addAll(updated)
+        notifyDataSetChanged()
     }
-) {
+
+    fun moveItem(from: Int, to: Int): Boolean {
+        if (from !in items.indices || to !in items.indices || from == to) {
+            return false
+        }
+        val moved = items.removeAt(from)
+        items.add(to, moved)
+        notifyItemMoved(from, to)
+        return true
+    }
+
+    fun snapshot(): List<UpgradeSkin> = items.toList()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         VH(ItemUpgradeSkinBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
+    override fun getItemCount(): Int = items.size
+
     override fun onBindViewHolder(holder: VH, position: Int) {
-        holder.bind(getItem(position), position)
-        // Staggered slide-in animation
-        val anim = android.view.animation.AnimationUtils.loadAnimation(holder.itemView.context, com.heroconfigmanager.R.anim.slide_in_right)
+        holder.bind(items[position])
+        val anim = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.slide_in_right)
         anim.startOffset = (position * 30L).coerceAtMost(200L)
         holder.itemView.startAnimation(anim)
     }
 
-    inner class VH(private val b: ItemUpgradeSkinBinding) :
-        androidx.recyclerview.widget.RecyclerView.ViewHolder(b.root) {
+    inner class VH(private val binding: ItemUpgradeSkinBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(u: UpgradeSkin, index: Int) {
-            b.tvUpgradeTitle.text  = u.skinTitle
-            b.chipUpgradeType.text = u.skinType.ifBlank { "—" }
-            b.chipSourceCount.text = "${u.availableSkins.size} sources"
-            Glide.with(b.root)
-                .load(u.skinLogo)
-                .placeholder(R.color.surface_variant)
-                .into(b.imgUpgradeLogo)
+        fun bind(item: UpgradeSkin) {
+            binding.tvUpgradeTitle.text = item.skinTitle
+            binding.chipUpgradeType.text = item.skinType.ifBlank { "Unlabeled" }
+            binding.chipSourceCount.text = binding.root.context.getString(
+                R.string.sources_count_format,
+                item.availableSkins.size
+            )
+            binding.tvUpgradePreview.text = if (item.availableSkins.isEmpty()) {
+                binding.root.context.getString(R.string.upgrade_sources_preview_empty)
+            } else {
+                val preview = item.availableSkins
+                    .take(3)
+                    .joinToString(", ") { source -> source.skinTitle.ifBlank { "Untitled" } }
+                binding.root.context.getString(R.string.upgrade_sources_preview, preview)
+            }
 
-            b.btnEditUpgrade.setOnClickListener   { onEdit(index, u) }
-            b.btnDeleteUpgrade.setOnClickListener { onDelete(index) }
+            loadImageWithSkeleton(
+                binding.skeletonUpgradeLogo,
+                binding.imgUpgradeLogo,
+                item.skinLogo
+            )
 
-            b.imgDragHandle.setOnTouchListener { _, event ->
-                if (event.actionMasked == MotionEvent.ACTION_DOWN) onStartDrag(this)
+            binding.btnEditUpgrade.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onEdit(position, items[position])
+                }
+            }
+            binding.btnDeleteUpgrade.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onDelete(position)
+                }
+            }
+            binding.imgDragHandle.setOnTouchListener { _, event ->
+                if (event.actionMasked == MotionEvent.ACTION_DOWN &&
+                    bindingAdapterPosition != RecyclerView.NO_POSITION
+                ) {
+                    onStartDrag(this)
+                    return@setOnTouchListener true
+                }
                 false
             }
         }
@@ -269,9 +341,9 @@ class UpgradeSkinAdapter(
 }
 
 class AvailableSkinAdapter(
-    private val items:       MutableList<AvailableSkin>,
-    private val onEdit:      (Int, AvailableSkin) -> Unit,
-    private val onRemove:    (Int) -> Unit,
+    private val items: MutableList<AvailableSkin>,
+    private val onEdit: (Int, AvailableSkin) -> Unit,
+    private val onRemove: (Int) -> Unit,
     private val onStartDrag: (RecyclerView.ViewHolder) -> Unit,
 ) : RecyclerView.Adapter<AvailableSkinAdapter.AVH>() {
 
@@ -280,25 +352,60 @@ class AvailableSkinAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         AVH(ItemAvailableSkinBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
-    override fun onBindViewHolder(holder: AVH, position: Int) =
-        holder.bind(items[position], position)
+    override fun onBindViewHolder(holder: AVH, position: Int) {
+        holder.bind(items[position])
+    }
 
-    inner class AVH(private val b: ItemAvailableSkinBinding) : RecyclerView.ViewHolder(b.root) {
-        fun bind(skin: AvailableSkin, index: Int) {
-            b.tvAvailableSkinTitle.text = skin.skinTitle
-            b.tvAvailableSkinType.text  = skin.skinType.ifBlank { "—" }
-            Glide.with(b.root)
-                .load(skin.skinLogo)
-                .placeholder(R.color.surface_variant)
-                .into(b.imgAvailableSkinLogo)
+    inner class AVH(private val binding: ItemAvailableSkinBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-            b.btnEditAvailableSkin.setOnClickListener { onEdit(index, skin) }
-            b.btnRemoveAvailableSkin.setOnClickListener { onRemove(index) }
+        fun bind(item: AvailableSkin) {
+            binding.tvAvailableSkinTitle.text = item.skinTitle
+            binding.chipAvailableSkinType.text = item.skinType.ifBlank { "Unlabeled" }
+            binding.chipAvailableZip.text = if (item.zipUrl.isBlank()) {
+                binding.root.context.getString(R.string.source_zip_missing)
+            } else {
+                binding.root.context.getString(R.string.source_zip_ready)
+            }
+            binding.tvAvailableSkinMeta.text = item.zipUrl.toReadableHost(
+                binding.root.context.getString(R.string.source_host_unknown)
+            )
 
-            b.imgSourceDragHandle.setOnTouchListener { _, event ->
-                if (event.actionMasked == MotionEvent.ACTION_DOWN) onStartDrag(this)
+            loadImageWithSkeleton(
+                binding.skeletonAvailableSkinLogo,
+                binding.imgAvailableSkinLogo,
+                item.skinLogo
+            )
+
+            binding.btnEditAvailableSkin.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onEdit(position, items[position])
+                }
+            }
+            binding.btnRemoveAvailableSkin.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onRemove(position)
+                }
+            }
+            binding.imgSourceDragHandle.setOnTouchListener { _, event ->
+                if (event.actionMasked == MotionEvent.ACTION_DOWN &&
+                    bindingAdapterPosition != RecyclerView.NO_POSITION
+                ) {
+                    onStartDrag(this)
+                    return@setOnTouchListener true
+                }
                 false
             }
         }
     }
+}
+
+private fun String.toReadableHost(fallback: String): String {
+    return runCatching {
+        Uri.parse(this).host
+            ?.removePrefix("www.")
+            ?.takeIf { it.isNotBlank() }
+    }.getOrNull() ?: fallback
 }
